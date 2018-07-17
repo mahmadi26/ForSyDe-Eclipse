@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<se.kth.ict.forsyde.core:System xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:se.kth.ict.forsyde.core="http://forsyde.ict.kth.se/core/forsyde">
+  <processNetworks name="pn3">
+    <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="c1_c1_l2prime" moc="SY" dataType="int"/>
+    <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="c2_l1prime" moc="SY" dataType="int"/>
+    <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="c1_c1_l2prime" moc="SY" dataType="int" boundProcess="//@processNetworks.0/@processes.4" boundPort="//@processNetworks.0/@processes.4/@ports.0"/>
+    <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="c2_l1prime" moc="SY" dataType="int" boundProcess="//@processNetworks.0/@processes.3" boundPort="//@processNetworks.0/@processes.3/@ports.1"/>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="c1_l3">
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="i1" moc="SY" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="out1" moc="SY" dataType="int"/>
+      <processConstructor name="mealy" moc="SY"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="c1_c1_l2">
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="i1" moc="SY" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="out1" moc="SY" dataType="int"/>
+      <processConstructor name="delay" moc="SY"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="c2_l1">
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="i1" moc="SY" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="out1" moc="SY" dataType="int"/>
+      <processConstructor name="comb" moc="SY"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="c2_l1prime">
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="inParout11" moc="SY" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="outPari11" moc="SY" dataType="int"/>
+      <processConstructor name="sender" moc="SY"/>
+      <constructorArguments name="rank" type="Estring" value="1"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="c1_c1_l2prime">
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="inParout11" moc="SY" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="outParout11" moc="SY" dataType="int"/>
+      <processConstructor name="reciver" moc="SY"/>
+      <constructorArguments name="rank" type="Estring" value="1"/>
+    </processes>
+  </processNetworks>
+</se.kth.ict.forsyde.core:System>
