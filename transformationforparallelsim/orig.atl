@@ -42,7 +42,7 @@ lazy rule copyProcessNetwork {
 
 	to
 		tpn : forsyde!ProcessNetwork (
-			 name <- spn.name
+			 name <- spn.name+'_+_'+thisModule.id
 			,processes <- spn.processes->select(pr | inxmlroot.children->select(x | x.name ='Element')->
 												   select(y | y.attribute('processor').value.toInteger() = thisModule.id)->
 											       exists(z | z.attribute('process').value = pr.name))->
@@ -65,7 +65,7 @@ lazy rule copyProcessNetwork {
 													  -> select (m | thisModule.outPortCreatingSignals(m,inxmlroot) )
 													  -> collect (m2 | thisModule.createdOutPNPorts(m2)))),tpn.processes)
 
---			,signals <- spn.signals->reject(s | thisModule.deleteSignal(s,inxmlroot))->collect (k | thisModule.CopySignal(k))
+			,signals <- spn.signals->reject(s | thisModule.deleteSignal(s,inxmlroot))->collect (k | thisModule.CopySignal(k))
 																					 ->union(thisModule.createdSignals(spn.signals,inxmlroot))
 
 
@@ -80,6 +80,38 @@ lazy rule copyProcessNetwork {
 
 }
 
+lazy rule copyOutCreatedSignals {
+	from
+		s : forsyde!Signal
+	   ,m : forsyde!Process
+
+	to
+		sp : forsyde!Signal (
+			name <- s.name.concat('prime')
+			,moc <- s.moc
+			,datatype <- s.datatype
+			,sourcePort <- s.sourcePort
+			,sourceProcess <- s.sourceProcess
+			,targetPort <- m
+			,targetProcess <- m.ports -> select (k | k.name.startsWith('inPar'))->first()
+		)
+}
+lazy rule copyInCreatedSignals {
+	from
+		s : forsyde!Signal
+	   ,m : forsyde!Process
+
+	to
+		sp : forsyde!Signal (
+			name <- s.name.concat('prime')
+			,moc <- s.moc
+			,datatype <- s.datatype
+			,sourcePort <- m
+			,sourceProcess <- m.ports -> select (k | k.name.startsWith('inPar'))->first()
+			,targetPort <- s.targetPort
+			,targetProcess <- s.targetProcess
+		)
+}
 lazy rule resolvePortsTempIn {
 	from
 		 p : forsyde!InputPort
@@ -410,3 +442,37 @@ helper def : resolvePorts (p: Sequence(forsyde!Port) , pr:Sequence(forsyde!Proce
 	  						 endif )
 
 			;
+
+
+helper def : createdSignals (s : Sequence(forsyde!Signal) , inxmlroot : XML!Root ) : Sequence (forsyde!Signal) =
+						  s->select(k |not ((inxmlroot.children->select(x | x.name ='Element')
+							  	  ->select(y | y.attribute('process').value = k.targetProcess.name)
+								  ->first().attribute('processor').value) = (inxmlroot.children->select(x | x.name ='Element')
+							  	  ->select(y | y.attribute('process').value = k.sourceProcess.name)
+								  ->first().attribute('processor').value)))
+
+								  ->select (m | let a : Boolean = (inxmlroot.children->select(x | x.name ='Element')
+							  	  ->select(y | y.attribute('processor').value = thisModule.id))
+								  in ( if a->isEmpty() then false else
+								  	if ((a->first().attribute('process').value) = m.sourceProcess.name) then true else false endif endif)
+								  		  or (let b : Boolean = (inxmlroot.children->select(x | x.name ='Element')
+							  	  ->select(y | y.attribute('processor').value = thisModule.id))
+								  in ( if b->isEmpty() then false else
+								  	if ((b->first().attribute('process').value) = m.targetProcess.name) then true else false endif endif)))
+
+								  ->collect (x | if
+								 					 (inxmlroot.children->select(x | x.name ='Element')
+							  	  					->select(y | y.attribute('processor').value = thisModule.id)
+												    ->collect(m | m.attribute('process').value)
+												    ->includes(x.sourceprocess.name))
+								  				 then
+												 	thisModule.copyOutCreatedSignals(x)
+												 else
+												 	thisModule.copyInCreatedSignals(x)
+												endif
+								  			)
+
+
+	;
+
+				
