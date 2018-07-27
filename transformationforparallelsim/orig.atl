@@ -43,8 +43,7 @@ lazy rule copyProcessNetwork {
 	to
 		tpn : forsyde!ProcessNetwork (
 			 name <- spn.name+'_+_'+thisModule.id
-			,processes <- spn.processes->select(pr | inxmlroot.children->select(x | x.name ='Element')->
-												   select(y | y.attribute('processor').value.toInteger() = thisModule.id)->
+			,processes <- spn.processes->select(pr | inxmlroot.equalAtts('processor',thisModule.id.toString())->
 											       exists(z | z.attribute('process').value = pr.name))->
 												   collect(p|thisModule.CopyLeafProcess(p)) ->
 												   union(spn.signals ->select ( k |thisModule.senderProcess(k,inxmlroot))->
@@ -53,20 +52,30 @@ lazy rule copyProcessNetwork {
 												   collect (n | thisModule.copyRecieverProcess(n)))
 
 
-			,ports <- thisModule.resolvePorts((spn.ports-> select(u | thisModule.boundedProcessesPorts(spn,inxmlroot,tpn.processes)->includes(u))
-												->collect (k| if k.oclIsTypeOf(forsyde!InputPort) then
+			,ports <- spn.ports -> select(p|inxmlroot.equalAtts('processor',thisModule.id.toString())
+									->collect(c|c.attribute('process').value)->exists(m | m = p.boundProcess.name))
+								    ->collect (k| if k.oclIsTypeOf(forsyde!InputPort) then
 												thisModule.CopyInputPort(k)
 												else
 												thisModule.CopyOutputPort(k)
-												endif)-> union (spn.signals
-													  -> select (n | thisModule.inPortCreatingSignals(n,inxmlroot) )
-													  -> collect (n2 | thisModule.createdInPNPorts(n2)))
-													  -> union (spn.signals
-													  -> select (m | thisModule.outPortCreatingSignals(m,inxmlroot) )
-													  -> collect (m2 | thisModule.createdOutPNPorts(m2)))),tpn.processes)
+												endif)
+									 ->union(spn.signals ->select ( k |thisModule.senderProcess(k,inxmlroot))
+											->collect (n | thisModule.createdOutPort(n,thisModule.selectPrForOutPort(n,tpn.processes))))
+								     ->union(spn.signals ->select ( k |thisModule.recieverProcess(k,inxmlroot))
+											->collect (n | thisModule.createdInPort(n,thisModule.selectPrForInPort(n,tpn.processes))))
 
-			,signals <- spn.signals->reject(s | thisModule.deleteSignal(s,inxmlroot))->collect (k | thisModule.CopySignal(k))
-																					 ->union(thisModule.createdSignals(spn.signals,inxmlroot))
+			,signals <- spn.signals->select(s | thisModule.preserveSignal(s,inxmlroot))
+									->collect (k | thisModule.CopySignal(k,thisModule.sourcePrForSignal(k,tpn.processes)
+										,thisModule.sourcePortForSignal(k,tpn.processes),thisModule.targetPrForSignal(k,tpn.processes)
+										,thisModule.targetPortForSignal(k,tpn.processes)
+											))
+									->union(spn.signals->select (s | thisModule.createdSignal(s,inxmlroot))
+										->collect (k | thisModule.CopySignal(k,thisModule.sourcePrForCsignal(inxmlroot,k,tpn.processes)
+										,thisModule.sourcePortForCsignal(inxmlroot,k,tpn.processes),thisModule.targetPrForCsignal(inxmlroot,k,tpn.processes)
+										,thisModule.targetPortForCsignal(inxmlroot,k,tpn.processes)))
+										)
+
+
 
 
 
@@ -80,80 +89,31 @@ lazy rule copyProcessNetwork {
 
 }
 
-lazy rule copyOutCreatedSignals {
+lazy rule CopyLeafProcess {
 	from
-		s : forsyde!Signal
-	   ,m : forsyde!Process
-
+		sp : forsyde!LeafProcess
 	to
-		sp : forsyde!Signal (
-			name <- s.name.concat('prime')
-			,moc <- s.moc
-			,datatype <- s.datatype
-			,sourcePort <- s.sourcePort
-			,sourceProcess <- s.sourceProcess
-			,targetPort <- m
-			,targetProcess <- m.ports -> select (k | k.name.startsWith('inPar'))->first()
+		tp : forsyde!LeafProcess  (
+			name <- sp.name,
+			processConstructor <- thisModule.CopyProcessConstructor(sp.processConstructor),
+			constructorArguments <- sp.constructorArguments->collect(ca | thisModule.CopyConstructorArgument(ca)),
+			ports <- sp.ports->collect(p | 	if p.oclIsTypeOf(forsyde!InputPort) then
+												thisModule.CopyInputPort(p)
+											else
+												thisModule.CopyOutputPort(p)
+											endif)
 		)
 }
-lazy rule copyInCreatedSignals {
-	from
-		s : forsyde!Signal
-	   ,m : forsyde!Process
-
-	to
-		sp : forsyde!Signal (
-			name <- s.name.concat('prime')
-			,moc <- s.moc
-			,datatype <- s.datatype
-			,sourcePort <- m
-			,sourceProcess <- m.ports -> select (k | k.name.startsWith('inPar'))->first()
-			,targetPort <- s.targetPort
-			,targetProcess <- s.targetProcess
-		)
-}
-lazy rule resolvePortsTempIn {
-	from
-		 p : forsyde!InputPort
-		,pr: forsyde!Process
-	to
-		 tp : forsyde!InputPort (
-
-				name <- p.name,
-				dataType <- p.dataType,
-				moc <- p.moc,
-				boundProcess <- pr,
-				boundPort <- pr.ports->select ( k | k.name.startsWith('inPar'))->first()
-			)
-
-}
-lazy rule resolvePortsTempOut {
-	from
-		 p : forsyde!OutputPort
-		,pr: forsyde!Process
-	to
-		 tp : forsyde!OutputPort (
-
-				name <- p.name,
-				dataType <- p.dataType,
-				moc <- p.moc,
-				boundProcess <- pr,
-				boundPort <- pr.ports->select ( k | k.name.startsWith('outPar'))->first()
-			)
-
-}
-
 
 lazy rule copySenderProcess {
 	from
 		s: forsyde!Signal
 	to
 		spr: forsyde!LeafProcess (
-		name <- s.sourceProcess.name.concat('prime')
+		name <- s.name + s.sourceProcess.name + 'prime'
 		,processConstructor <- thisModule.senderConstructor(thisModule.senderConstructor1)
 		,constructorArguments <- thisModule.senderArgument(thisModule.senderArgument1)
-		,ports <- Sequence{s.sourcePort} ->collect(p | thisModule.CopyInputPort1(p)) -> union(Sequence{s.targetPort} ->
-																				collect(p | thisModule.CopyOutputPort1(p)))
+		,ports <- Sequence {thisModule.ParInputPort(s.sourcePort,s), thisModule.ParOutputPort(s.sourcePort,s)}
 
 		)
 }
@@ -163,15 +123,83 @@ lazy rule copyRecieverProcess {
 		s: forsyde!Signal
 	to
 		spr: forsyde!LeafProcess (
-		name <- s.targetProcess.name.concat('prime')
+		name <- s.name + s.targetProcess.name + 'prime'
 		,processConstructor <- thisModule.recieverConstructor(thisModule.senderConstructor1)
 		,constructorArguments <- thisModule.recieverArgument(thisModule.recieverArgument1)
-		,ports <- Sequence{s.sourcePort} ->collect(p | thisModule.CopyInputPort1(p)) -> union(Sequence{s.sourcePort} ->
-																				collect(p | thisModule.CopyOutputPort1(p)))
+		,ports <- Sequence {thisModule.ParInputPort(s.targetPort,s), thisModule.ParOutputPort(s.targetPort,s)}
 		)
 }
 
+lazy rule ParInputPort {
+	from
+		sp : forsyde!OutputPort
+		,s : forsyde!Signal
+	to
+		tp : forsyde!InputPort (
+			name <- 'inPar'+s.name + s.sourceProcess.name + 'prime'
+			,dataType <- sp.dataType
+			,moc <- sp.moc
 
+		)
+}
+
+lazy rule ParOutputPort {
+	from
+		sp : forsyde!InputPort
+		,s : forsyde!Signal
+	to
+		tp : forsyde!OutputPort (
+			name <- 'outPar'+s.name + s.sourceProcess.name + 'prime'
+			,dataType <- sp.dataType
+			,moc <- sp.moc
+		)
+}
+
+lazy rule createdInPort {
+	from
+		s:forsyde!Signal
+		,pr: forsyde!Process
+	to
+		ip:forsyde!InputPort (
+			name <-'inport_'+s.name
+			,dataType <- s.dataType
+			,moc <- s.moc
+			,boundProcess <- pr
+			,boundPort<- pr.ports -> select (p | p.name.startsWith('inPar'))->first()
+		)
+}
+lazy rule createdOutPort {
+	from
+		s:forsyde!Signal
+		,pr: forsyde!Process
+	to
+		ip:forsyde!OutputPort (
+			name <-'outport_'+s.name
+			,dataType <- s.dataType
+			,moc <- s.moc
+			,boundProcess <- pr
+			,boundPort<- pr.ports -> select (p | p.name.startsWith('outPar'))->first()
+		)
+}
+
+lazy rule CopySignal {
+	from
+		sp : forsyde!Signal
+		,spr : forsyde!Process
+		,sport : forsyde!OutputPort
+		,tpr : forsyde!Process
+		,tport : forsyde!InputPort
+	to
+		tp : forsyde!Signal (
+			name <- sp.name
+			,dataType <- sp.dataType
+			,moc <- sp.moc
+			,sourceProcess <- spr
+			,sourcePort <- sport
+			,targetProcess <- tpr
+			,targetPort <- tport
+		)
+}
 
 
 lazy rule senderConstructor {
@@ -214,71 +242,6 @@ lazy rule recieverArgument {
 		)
 }
 
-
-lazy rule CopyInputPort1 {
-	from
-		sp : forsyde!OutputPort
-	to
-		tp : forsyde!InputPort (
-			name <- 'inPar'.concat(sp.name).concat(thisModule.id.toString()),
-			dataType <- sp.dataType,
-			moc <- sp.moc
-
-		)
-}
-
-lazy rule CopyOutputPort1 {
-	from
-		sp : forsyde!InputPort
-	to
-		tp : forsyde!OutputPort (
-			name <- 'outPar'.concat(sp.name).concat(thisModule.id.toString()),
-			dataType <- sp.dataType,
-			moc <- sp.moc
-		)
-}
-
-
-lazy rule createdInPNPorts {
-	from
-		s : forsyde!Signal
-	to
-		sp : forsyde!InputPort
-		(
-			 name <- s.targetProcess.name.concat('prime')
-			,dataType <- s.dataType
-			,moc <- s.moc
-		)
-}
-
-lazy rule createdOutPNPorts {
-	from
-		s : forsyde!Signal
-	to
-		sp : forsyde!OutputPort
-		(
-			 name <- s.sourceProcess.name.concat('prime')
-			,dataType <- s.dataType
-			,moc <- s.moc
-		)
-}
-
-lazy rule CopyLeafProcess {
-	from
-		sp : forsyde!LeafProcess
-	to
-		tp : forsyde!LeafProcess  (
-			name <- sp.name,
-			processConstructor <- thisModule.CopyProcessConstructor(sp.processConstructor),
-			constructorArguments <- sp.constructorArguments->collect(ca | thisModule.CopyConstructorArgument(ca)),
-			ports <- sp.ports->collect(p | 	if p.oclIsTypeOf(forsyde!InputPort) then
-												thisModule.CopyInputPort(p)
-											else
-												thisModule.CopyOutputPort(p)
-											endif)
-		)
-}
-
 lazy rule CopyInputPort {
 	from
 		sp : forsyde!InputPort
@@ -301,20 +264,6 @@ lazy rule CopyOutputPort {
 		)
 }
 
-lazy rule CopySignal {
-	from
-		sp : forsyde!Signal
-	to
-		tp : forsyde!Signal (
-			name <- sp.name,
-			dataType <- sp.dataType,
-			moc <- sp.moc--,
---			sourceProcess <- sp.sourceProcess,--FIXME: point to where?
---			sourcePort <- sp.sourcePort,--FIXME: point to where?
---			targetProcess <- sp.targetProcess,--FIXME: point to where?
---			targetPort <- sp.targetPort--FIXME: point to where?
-		)
-}
 
 lazy rule CopyProcessConstructor {
 	from
@@ -342,137 +291,159 @@ helper context XML!Element def : attribute(attName: String) : XML!Attribute =
 	self.children->select(a | a.name=attName)->first()
 ;
 
+helper context XML!Root def : equalAtts(att : String,  comp:String) : Sequence (XML!Element) =
+	if (att = 'process')
+	then
+		self.children->select(x | x.name ='Element')
+					 ->select(y | y.attribute('process').value = comp)
+	else
+		if (att='processor')
+		then
+			self.children->select(x | x.name ='Element')
+					     ->select(y | y.attribute('processor').value = comp)
+		else
+			OclUndefined
+			endif
+		endif
+
+;
+
+helper def : sourcePrForSignal (s : forsyde!Signal , pr: forsyde!Process) : forsyde!Process =
+	pr->select (p | s.sourceProcess.name = p.name)->first()
+;
+helper def : targetPrForSignal (s : forsyde!Signal , pr: forsyde!Process) : forsyde!Process =
+	pr->select (p | s.targetProcess.name = p.name)->first()
+;
+helper def : sourcePortForSignal (s : forsyde!Signal , pr: forsyde!Process) : forsyde!OutputPort =
+	pr->select (p | s.sourceProcess.name = p.name)->collect (k | k.ports)->flatten()->select(m | m.name = s.sourcePort.name)->first()
+;
+helper def : targetPortForSignal (s : forsyde!Signal , pr: forsyde!Process) : forsyde!InputPort =
+	pr->select (p | s.targetProcess.name = p.name)->collect (k | k.ports)->flatten()->select(m | m.name = s.targetPort.name)->first()
+;
+
+helper def : sourcePrForCsignal (inxmlroot : XML!Root,s : forsyde!Signal , pr: forsyde!Process) : forsyde!Process =
+	if (inxmlroot.equalAtts('processor',thisModule.id.toString())->collect (t | t.attribute('process').value)->flatten()
+									->includes(s.sourceProcess.name))
+	then
+		pr->select(m |s.sourceProcess.name = m.name)->first()
+	else
+		pr->select(x | (s.name + s.targetProcess.name + 'prime') = x.name ) ->first()
+		endif
+;
+helper def : targetPrForCsignal (inxmlroot : XML!Root,s : forsyde!Signal , pr: forsyde!Process) : forsyde!Process =
+	if (inxmlroot.equalAtts('processor',thisModule.id.toString())->collect (t | t.attribute('process').value)->flatten()
+									->includes(s.sourceProcess.name))
+	then
+		pr->select(m | (s.name + s.sourceProcess.name + 'prime') = m.name ) ->first()
+	else
+		pr->select(x |s.targetProcess.name = x.name)->first()
+		endif
+;
+helper def : sourcePortForCsignal (inxmlroot : XML!Root,s : forsyde!Signal , pr: forsyde!Process) : forsyde!Port =
+	if (inxmlroot.equalAtts('processor',thisModule.id.toString())->collect (t | t.attribute('process').value)->flatten()
+									->includes(s.sourceProcess.name))
+	then
+		pr->select(m |s.sourceProcess.name = m.name)->collect(c | c.ports)->flatten()
+		->select(x | s.sourcePort.name = x.name)->first()
+	else
+		pr->select(m | (s.name + s.targetProcess.name + 'prime') = m.name ) ->collect(c | c.ports)->flatten()
+		->select (x | x.name = ('outPar'+s.name + s.sourceProcess.name + 'prime') )->first()
+		endif
+;
+helper def : targetPortForCsignal (inxmlroot : XML!Root,s : forsyde!Signal , pr: forsyde!Process) : forsyde!Port =
+	if (inxmlroot.equalAtts('processor',thisModule.id.toString())->collect (t | t.attribute('process').value)->flatten()
+									->includes(s.sourceProcess.name))
+	then
+		pr->select(m | (s.name + s.sourceProcess.name + 'prime') = m.name ) ->collect(c | c.ports)->flatten()
+		->select (x | x.name = ('inPar'+s.name + s.sourceProcess.name + 'prime') )->first()
+	else
+		pr->select(m |s.targetProcess.name = m.name)->collect(c | c.ports)->flatten()
+		->select(x | s.targetPort.name = x.name)->first()
+		endif
+;
+
+
+
+
 helper def : xmlelement :Set(XML!Element) = OclUndefined;
 helper def : id :Integer = 1;
 helper def : syncid : Integer = 1 ;
 helper def : numPorts :Integer = 0;
 
-helper def : boundedProcessesPorts(origPN: forsyde!ProcessNetwork, inxmlroot : XML!Root,origProc : forsyde!LeafProcess)
-				: Sequence(forsyde!Port) =  let a : Set (forsyde!Port) = origProc
-													->select (z | inxmlroot.children->select(x | x.name ='Element')
-			                    				    ->select(y | y.attribute('processor').value.toInteger() = thisModule.id)
-													->exists (x | x.attribute ('process').value = z.name))-> collect (e | e.ports)
-													->flatten()
-				in  origPN.ports  -> select (m | (a->includes(m.boundPort))) ;
+helper def : senderProcess (s:forsyde!Signal , inxmlroot : XML!Root) : Boolean =
+	if ((inxmlroot.equalAtts('process',s.sourceProcess.name)->first().attribute('processor').value.toInteger())
+		 =thisModule.id)
+	then
+		if ((inxmlroot.equalAtts('process',s.targetProcess.name)->first().attribute('processor').value.toInteger())
+		 =thisModule.id)
+		then
+			false
+		else
+			true
+			endif
+	else
+		false
+		endif
+;
+
+helper def : recieverProcess (s:forsyde!Signal , inxmlroot : XML!Root) : Boolean =
+	if ((inxmlroot.equalAtts('process',s.targetProcess.name)->first().attribute('processor').value.toInteger())
+		 =thisModule.id)
+	then
+		if ((inxmlroot.equalAtts('process',s.sourceProcess.name)->first().attribute('processor').value.toInteger())
+		 =thisModule.id)
+		then
+			false
+		else
+			true
+			endif
+	else
+		false
+		endif
+;
+
+helper def : preserveSignal (s:forsyde!Signal , inxmlroot : XML!Root) : Boolean =
+	if (inxmlroot.equalAtts('processor',thisModule.id.toString())->collect (t | t.attribute('process').value)->flatten()
+									->includes(s.sourceProcess.name) and
+									inxmlroot.equalAtts('processor',thisModule.id.toString())->collect (t | t.attribute('process').value)->flatten()
+									->includes(s.targetProcess.name))
+	then
+		true
+	else
+		false
+		endif
+			;
+
+helper def : createdSignal (s:forsyde!Signal , inxmlroot : XML!Root) : Boolean =
+	if (inxmlroot.equalAtts('processor',thisModule.id.toString())->collect (t | t.attribute('process').value)->flatten()
+									->includes(s.sourceProcess.name) and
+									inxmlroot.equalAtts('processor',thisModule.id.toString())->collect (t | t.attribute('process').value)->flatten()
+									->excludes(s.targetProcess.name))
+	then
+		true
+	else
+		if (inxmlroot.equalAtts('processor',thisModule.id.toString())->collect (t | t.attribute('process').value)->flatten()
+									->includes(s.targetProcess.name) and
+									inxmlroot.equalAtts('processor',thisModule.id.toString())->collect (t | t.attribute('process').value)->flatten()
+									->excludes(s.sourceProcess.name))
+		then true
+		else false
+			endif
+
+		endif
+			;
 
 
-helper def : inPortCreatingSignals(s : forsyde!Signal ,inxmlroot : XML!Root ) : Boolean
-	= let b : Boolean = (not ((inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.targetProcess.name)
-								  ->first().attribute('processor').value) = (inxmlroot.children->select(q | q.name ='Element')
-							  	  ->select(w | w.attribute('process').value = s.sourceProcess.name)
-								  ->first().attribute('processor').value)))
-				in if (b = true) then if ((inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.targetProcess.name)
-								  ->first().attribute('processor').value.toInteger()) = thisModule.id)
-				   			then true
-				   			else false endif
-				   else false endif
-		   ;
-helper def : outPortCreatingSignals(s : forsyde!Signal ,inxmlroot : XML!Root ) : Boolean
-	= let b : Boolean = not ((inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.targetProcess.name)
-								  ->first().attribute('processor').value) = (inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.sourceProcess.name)
-								  ->first().attribute('processor').value))
-				in if (b = true) then if ((inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.sourceProcess.name)
-								  ->first().attribute('processor').value.toInteger()) = thisModule.id)
-				   			then true
-				   			else false endif
-				   else false endif
-		   ;
-helper def : deleteSignal (s:forsyde!Signal , inxmlroot : XML!Root) : Boolean
-	= let b : Boolean = not ((inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.targetProcess.name)
-								  ->first().attribute('processor').value) = (inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.sourceProcess.name)
-								  ->first().attribute('processor').value))
-				in if b = true then true else if not ((inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.sourceProcess.name)
-								  ->first().attribute('processor').value.toInteger()) = thisModule.id)
-								  			  then true else false endif
-					endif
-								  ;
-helper def : senderProcess (s:forsyde!Signal , inxmlroot : XML!Root) : Boolean
-	= let b : Boolean =  ((inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.targetProcess.name)
-								  ->first().attribute('processor').value) = (inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.sourceProcess.name)
-								  ->first().attribute('processor').value))
-				in if (b = true) then false  else if  ((inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.sourceProcess.name)
-								  ->first().attribute('processor').value.toInteger()) = thisModule.id)
-												  then true else false endif
-					endif ;
+helper def : selectPrForInPort (s:forsyde!Signal , pr : forsyde!Process) : forsyde!Process =
+	pr ->select (k | k.name = s.name + s.targetProcess.name + 'prime')->first()
+;
+helper def : selectPrForOutPort (s:forsyde!Signal , pr : forsyde!Process) : forsyde!Process =
+	pr ->select (k | k.name = s.name + s.sourceProcess.name + 'prime')->first()
+;
 
-helper def : recieverProcess (s:forsyde!Signal , inxmlroot : XML!Root) : Boolean
-	= let b : Boolean =  ((inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.targetProcess.name)
-								  ->first().attribute('processor').value) = (inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.sourceProcess.name)
-								  ->first().attribute('processor').value))
-				in if (b = true) then false  else if  ((inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = s.targetProcess.name)
-								  ->first().attribute('processor').value.toInteger()) = thisModule.id)
-												  then true else false endif
-					endif ;
+
 
 helper def : senderConstructor1 : forsyde!ProcessConstructor = OclUndefined;
 helper def : recieverConstructor1 : forsyde!ProcessConstructor = OclUndefined;
 helper def : senderArgument1 : forsyde!ProcessArgument = OclUndefined;
 helper def : recieverArgument1 : forsyde!ProcessArgument = OclUndefined;
-
-helper def : resolvePorts (p: Sequence(forsyde!Port) , pr:Sequence(forsyde!Process)) : Sequence (forsyde!Port) =
-	  		p ->collect (k | if (k.name.endsWith('prime')) then
-	  													 if k.oclIsTypeOf(forsyde!InputPort) then
-														 			thisModule.resolvePortsTempIn(k,pr->
-														 				select(m|  (m.name = (k.name)))->first())
-	  													  else
-														 			thisModule.resolvePortsTempOut(k,pr->
-														 				select(m|  (m.name = (k.name)))->first())
-	  													   endif
-	  															else
-
-	  																if k.oclIsTypeOf(forsyde!InputPort) then
-																	thisModule.CopyInputPort(k)
-																	else
-																	thisModule.CopyOutputPort(k)
-																	endif
-	  						 endif )
-
-			;
-
-
-helper def : createdSignals (s : Sequence(forsyde!Signal) , inxmlroot : XML!Root ) : Sequence (forsyde!Signal) =
-						  s->select(k |not ((inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = k.targetProcess.name)
-								  ->first().attribute('processor').value) = (inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('process').value = k.sourceProcess.name)
-								  ->first().attribute('processor').value)))
-
-								  ->select (m | let a : Boolean = (inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('processor').value = thisModule.id))
-								  in ( if a->isEmpty() then false else
-								  	if ((a->first().attribute('process').value) = m.sourceProcess.name) then true else false endif endif)
-								  		  or (let b : Boolean = (inxmlroot.children->select(x | x.name ='Element')
-							  	  ->select(y | y.attribute('processor').value = thisModule.id))
-								  in ( if b->isEmpty() then false else
-								  	if ((b->first().attribute('process').value) = m.targetProcess.name) then true else false endif endif)))
-
-								  ->collect (x | if
-								 					 (inxmlroot.children->select(x | x.name ='Element')
-							  	  					->select(y | y.attribute('processor').value = thisModule.id)
-												    ->collect(m | m.attribute('process').value)
-												    ->includes(x.sourceprocess.name))
-								  				 then
-												 	thisModule.copyOutCreatedSignals(x)
-												 else
-												 	thisModule.copyInCreatedSignals(x)
-												endif
-								  			)
-
-
-	;
-
-				
