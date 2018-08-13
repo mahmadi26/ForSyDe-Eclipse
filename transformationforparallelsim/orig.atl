@@ -42,14 +42,14 @@ lazy rule copyProcessNetwork {
 
 	to 
 		tpn : forsyde!ProcessNetwork (
-			 name <- spn.name+'_+_'+thisModule.id
+			 name <- spn.name+'__'+thisModule.id
 			,processes <- spn.processes->select(pr | inxmlroot.equalAtts('processor',thisModule.id.toString())->
 											       exists(z | z.attribute('process').value = pr.name))->
 												   collect(p|thisModule.CopyLeafProcess(p)) ->
 												   union(spn.signals ->select ( k |thisModule.senderProcess(k,inxmlroot))-> 
-												   collect (n | thisModule.copySenderProcess(n)))->
+												   collect (n | thisModule.copySenderProcess(n,inxmlroot)))->
 												   union(spn.signals ->select ( k |thisModule.recieverProcess(k,inxmlroot))-> 
-												   collect (n | thisModule.copyRecieverProcess(n)))
+												   collect (n | thisModule.copyRecieverProcess(n,inxmlroot)))
 												   	
 												   
 			,ports <- spn.ports -> select(p|inxmlroot.equalAtts('processor',thisModule.id.toString())
@@ -59,10 +59,10 @@ lazy rule copyProcessNetwork {
 												else
 												thisModule.CopyOutputPort(k)
 												endif)
-									 ->union(spn.signals ->select ( k |thisModule.senderProcess(k,inxmlroot)) 
-											->collect (n | thisModule.createdOutPort(n,thisModule.selectPrForOutPort(n,tpn.processes))))
-								     ->union(spn.signals ->select ( k |thisModule.recieverProcess(k,inxmlroot)) 
-											->collect (n | thisModule.createdInPort(n,thisModule.selectPrForInPort(n,tpn.processes))))
+						--			 ->union(spn.signals ->select ( k |thisModule.senderProcess(k,inxmlroot)) 
+						--					->collect (n | thisModule.createdOutPort(n,thisModule.selectPrForOutPort(n,tpn.processes))))
+						--		     ->union(spn.signals ->select ( k |thisModule.recieverProcess(k,inxmlroot)) 
+						--					->collect (n | thisModule.createdInPort(n,thisModule.selectPrForInPort(n,tpn.processes))))
 													 
 			,signals <- spn.signals->select(s | thisModule.preserveSignal(s,inxmlroot))
 									->collect (k | thisModule.CopySignal(k,thisModule.sourcePrForSignal(k,tpn.processes)
@@ -108,11 +108,12 @@ lazy rule CopyLeafProcess {
 lazy rule copySenderProcess {
 	from 
 		s: forsyde!Signal 
+		,inxmlroot : XML!Root
 	to 
 		spr: forsyde!LeafProcess (
 		name <- s.name + s.sourceProcess.name + 'prime'	
 		,processConstructor <- thisModule.senderConstructor(thisModule.senderConstructor1)
-		,constructorArguments <- Sequence {thisModule.rankArgument(),thisModule.idArgument(s)}
+		,constructorArguments <- Sequence {thisModule.rankArgumentSender(s,inxmlroot),thisModule.idArgument(s)}
 		,ports <- Sequence {thisModule.ParInputPort(s.sourcePort,s), thisModule.ParOutputPort(s.sourcePort,s)}
 											
 		) 	
@@ -121,11 +122,12 @@ lazy rule copySenderProcess {
 lazy rule copyRecieverProcess {
 	from 
 		s: forsyde!Signal 
+		,inxmlroot : XML!Root
 	to 
 		spr: forsyde!LeafProcess (
 		name <- s.name + s.targetProcess.name + 'prime'	
 		,processConstructor <- thisModule.recieverConstructor(thisModule.senderConstructor1)
-		,constructorArguments <- Sequence {thisModule.rankArgument(),thisModule.idArgument(s)}
+		,constructorArguments <- Sequence {thisModule.rankArgumentReceiver(s,inxmlroot),thisModule.idArgument(s)}
 		,ports <- Sequence {thisModule.ParInputPort(s.targetPort,s), thisModule.ParOutputPort(s.targetPort,s)}
 		) 	
 }
@@ -216,19 +218,31 @@ lazy rule recieverConstructor {
 		spc : forsyde!ProcessConstructor
 	to 
 		tpc : forsyde!ProcessConstructor (
-			name <- 'reciver',
+			name <- 'receiver',
 			moc <- 'SY'
 		)
 }
 
-lazy rule rankArgument {
+lazy rule rankArgumentSender {
 	from 
 		s : forsyde!Signal
+		,inxmlroot : XML!Root
 	to 
 		tca : forsyde!ConstructorArgument (
 			name <- 'rank',
 			type <- 'EInteger',
-			value <- thisModule.id.toString()
+			value <- ((inxmlroot.equalAtts('process',s.targetProcess.name)->first().attribute('processor').value.toInteger())-1).toString()
+		)
+}
+lazy rule rankArgumentReceiver {
+	from 
+		s : forsyde!Signal
+		,inxmlroot : XML!Root
+	to 
+		tca : forsyde!ConstructorArgument (
+			name <- 'rank',
+			type <- 'EInteger',
+			value <- ((inxmlroot.equalAtts('process',s.sourceProcess.name)->first().attribute('processor').value.toInteger())-1).toString()
 		)
 }
 lazy rule idArgument {
@@ -469,6 +483,5 @@ helper def :resolveId(s: forsyde!Signal) : Integer =
 								else 	
 										thisModule.seqnum
 								endif
-									;
+;
 	
-

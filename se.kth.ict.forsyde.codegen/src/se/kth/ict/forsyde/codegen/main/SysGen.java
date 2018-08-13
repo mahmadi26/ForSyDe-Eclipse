@@ -8,7 +8,7 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package se.kth.ict.forsyde.codegen.forsydesystemc.main;
+package se.kth.ict.forsyde.codegen.main;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,17 +25,17 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
 /**
- * Entry point of the 'Fsdsyscgen' generation module.
+ * Entry point of the 'SysGen' generation module.
  *
  * @generated
  */
-public class Fsdsyscgen extends AbstractAcceleoGenerator {
+public class SysGen extends AbstractAcceleoGenerator {
     /**
      * The name of the module.
      *
      * @generated
      */
-    public static final String MODULE_FILE_NAME = "/se/kth/ict/forsyde/codegen/forsydesystemc/main/fsdsyscgen";
+    public static final String MODULE_FILE_NAME = "/se/kth/ict/forsyde/codegen/main/sysGen";
     
     /**
      * The name of the templates that are to be generated.
@@ -65,7 +65,7 @@ public class Fsdsyscgen extends AbstractAcceleoGenerator {
      *
      * @generated
      */
-    public Fsdsyscgen() {
+    public SysGen() {
         // Empty implementation
     }
 
@@ -85,7 +85,7 @@ public class Fsdsyscgen extends AbstractAcceleoGenerator {
      *             the model cannot be loaded.
      * @generated
      */
-    public Fsdsyscgen(URI modelURI, File targetFolder,
+    public SysGen(URI modelURI, File targetFolder,
             List<? extends Object> arguments) throws IOException {
         initialize(modelURI, targetFolder, arguments);
     }
@@ -106,7 +106,7 @@ public class Fsdsyscgen extends AbstractAcceleoGenerator {
      *             This can be thrown in two scenarios : the module cannot be found, or it cannot be loaded.
      * @generated
      */
-    public Fsdsyscgen(EObject model, File targetFolder,
+    public SysGen(EObject model, File targetFolder,
             List<? extends Object> arguments) throws IOException {
         initialize(model, targetFolder, arguments);
     }
@@ -141,7 +141,7 @@ public class Fsdsyscgen extends AbstractAcceleoGenerator {
                  * add in "arguments" this "String" attribute.
                  */
                 
-                Fsdsyscgen generator = new Fsdsyscgen(modelURI, folder, arguments);
+                SysGen generator = new SysGen(modelURI, folder, arguments);
                 
                 /*
                  * Add the properties from the launch arguments.
@@ -335,11 +335,14 @@ public class Fsdsyscgen extends AbstractAcceleoGenerator {
      * 
      * @param resourceSet
      *            The resource set which registry has to be updated.
-     * @generated 
+     * @generated
      */
     @Override
     public void registerPackages(ResourceSet resourceSet) {
         super.registerPackages(resourceSet);
+        if (!isInWorkspace(forsyde.ForsydePackage.class)) {
+            resourceSet.getPackageRegistry().put(forsyde.ForsydePackage.eINSTANCE.getNsURI(), forsyde.ForsydePackage.eINSTANCE);
+        }
         
         /*
          * If you want to change the content of this method, do NOT forget to change the "@generated"

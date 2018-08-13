@@ -37,4 +37,3 @@
   	<signals name="salam" moc="SY" dataType="int" sourceProcess="//@processNetworks.0/@processes.2" sourcePort="//@processNetworks.0/@processes.2/@ports.1" targetProcess="//@processNetworks.0/@processes.3" targetPort="//@processNetworks.0/@processes.4/@ports.0"/>
   </processNetworks>
 </se.kth.ict.forsyde.core:System>
-

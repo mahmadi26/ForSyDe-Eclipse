@@ -1,5 +1,5 @@
 [comment encoding = UTF-8 /]
-[module maingen('http://forsyde.ict.kth.se/core/forsyde')]
+[module mainGen('http://forsyde.ict.kth.se/core/forsyde')]
 
 
 [template public generateMain(aSystem : System)]
@@ -7,18 +7,14 @@
 [file ('main.cpp', false, 'UTF-8')]
 [let tn : String = aSystem.processNetworks->first().name]
 #include "[tn/].hpp"
+#include <mpi.h>
+
 
 int sc_main(int argc, char **argv)
 {
-    MPI_Init(
-    int* argc,
-    char*** argv);
-
-	// Get the rank of the process
-    int world_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-
-	 [tn/] top1("[tn/]1");
+    MPI_Init(&argc,&argv);
+   
+    [tn/] top1("[tn/]1");
 
     sc_start();
    
