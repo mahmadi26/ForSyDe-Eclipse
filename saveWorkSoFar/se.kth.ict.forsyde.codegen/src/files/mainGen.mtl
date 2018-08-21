@@ -1,0 +1,28 @@
+[comment encoding = UTF-8 /]
+[module mainGen('http://forsyde.ict.kth.se/core/forsyde')]
+
+
+[template public generateMain(aSystem : System)]
+
+[file ('main.cpp', false, 'UTF-8')]
+[let tn : String = aSystem.processNetworks->first().name]
+#include "[tn/].hpp"
+#include <mpi.h>
+
+
+int sc_main(int argc, char **argv)
+{
+    MPI_Init(&argc,&argv);
+   
+    [tn/] top1("[tn/]1");
+
+    sc_start();
+   
+	MPI_Finalize();
+    
+	return 0;
+}
+[/let]
+[/file]
+
+[/template]

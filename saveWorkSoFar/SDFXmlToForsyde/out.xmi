@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:se.kth.ict.forsyde.core="http://forsyde.ict.kth.se/core/forsyde">
+  <se.kth.ict.forsyde.core:System>
+    <processNetworks>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a0_p4">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p0" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p1" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p2" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p3" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a0_p4_out" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a0_p5">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p0" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p1" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p2" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p3" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a0_p5_out" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a1_p3">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p0" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p2" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a1_p3_out" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a2_p2">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p0" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p1" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a2_p2_out" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a2_p3">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p0" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p1" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a2_p3_out" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a3_p3">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p0" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p1" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a3_p3_out" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a3_p4">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p0" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p1" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a3_p4_out" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a3_p5">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p0" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p1" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a3_p5_out" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a4_p2">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p0" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a4_p2_out" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a4_p3">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p0" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a4_p3_out" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a4_p4">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p0" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a4_p4_out" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a0_port_delay">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p4_delayIn" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p4_delayOut" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a0_port_delay">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p5_delayIn" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p5_delayOut" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a1_port_delay">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p3_delayIn" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p3_delayOut" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a2_port_delay">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p2_delayIn" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p2_delayOut" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a2_port_delay">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p3_delayIn" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p3_delayOut" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a3_port_delay">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p3_delayIn" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p3_delayOut" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a3_port_delay">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p4_delayIn" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p4_delayOut" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a3_port_delay">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p5_delayIn" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p5_delayOut" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a4_port_delay">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p2_delayIn" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p2_delayOut" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a4_port_delay">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p3_delayIn" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p3_delayOut" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a4_port_delay">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p4_delayIn" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p4_delayOut" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a0_zip">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a0p4_inZip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a0p5_inZip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a0_zipOut" moc="SDF" dataType="tuple"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a1_zip">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a1p3_inZip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a1_zipOut" moc="SDF" dataType="tuple"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a2_zip">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a2p2_inZip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a2p3_inZip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a2_zipOut" moc="SDF" dataType="tuple"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a3_zip">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a3p3_inZip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a3p4_inZip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a3p5_inZip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a3_zipOut" moc="SDF" dataType="tuple"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a4_zip">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a4p2_inZip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a4p3_inZip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a4p4_inZip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="a4_zipOut" moc="SDF" dataType="tuple"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a0_unzip">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a0_unzipIn" moc="SDF" dataType="tuple"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a0p4_outUnzip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a0p5_outUnzip" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a1_unzip">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a1_unzipIn" moc="SDF" dataType="tuple"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a1p3_outUnzip" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a2_unzip">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a2_unzipIn" moc="SDF" dataType="tuple"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a2p2_outUnzip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a2p3_outUnzip" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a3_unzip">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a3_unzipIn" moc="SDF" dataType="tuple"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a3p3_outUnzip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a3p4_outUnzip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a3p5_outUnzip" moc="SDF" dataType="Int"/>
+      </processes>
+      <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="a4_unzip">
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a4_unzipIn" moc="SDF" dataType="tuple"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a4p2_outUnzip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a4p3_outUnzip" moc="SDF" dataType="Int"/>
+        <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="a4p4_outUnzip" moc="SDF" dataType="Int"/>
+      </processes>
+    </processNetworks>
+  </se.kth.ict.forsyde.core:System>
+  <se.kth.ict.forsyde.core:Signal name="p4_beforeD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.0" sourcePort="/0/@processNetworks.0/@processes.0/@ports.4" targetProcess="/0/@processNetworks.0/@processes.11" targetPort="/0/@processNetworks.0/@processes.11/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p4_afterD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.11" sourcePort="/0/@processNetworks.0/@processes.11/@ports.1" targetProcess="/0/@processNetworks.0/@processes.22" targetPort="/0/@processNetworks.0/@processes.22/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p5_beforeD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.1" sourcePort="/0/@processNetworks.0/@processes.1/@ports.4" targetProcess="/0/@processNetworks.0/@processes.12" targetPort="/0/@processNetworks.0/@processes.12/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p5_afterD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.12" sourcePort="/0/@processNetworks.0/@processes.12/@ports.1" targetProcess="/0/@processNetworks.0/@processes.22" targetPort="/0/@processNetworks.0/@processes.22/@ports.1"/>
+  <se.kth.ict.forsyde.core:Signal name="p3_beforeD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.2" sourcePort="/0/@processNetworks.0/@processes.2/@ports.2" targetProcess="/0/@processNetworks.0/@processes.13" targetPort="/0/@processNetworks.0/@processes.13/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p3_afterD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.13" sourcePort="/0/@processNetworks.0/@processes.13/@ports.1" targetProcess="/0/@processNetworks.0/@processes.23" targetPort="/0/@processNetworks.0/@processes.23/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p2_beforeD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.3" sourcePort="/0/@processNetworks.0/@processes.3/@ports.2" targetProcess="/0/@processNetworks.0/@processes.14" targetPort="/0/@processNetworks.0/@processes.14/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p2_afterD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.14" sourcePort="/0/@processNetworks.0/@processes.14/@ports.1" targetProcess="/0/@processNetworks.0/@processes.24" targetPort="/0/@processNetworks.0/@processes.24/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p3_beforeD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.4" sourcePort="/0/@processNetworks.0/@processes.4/@ports.2" targetProcess="/0/@processNetworks.0/@processes.15" targetPort="/0/@processNetworks.0/@processes.15/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p3_afterD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.15" sourcePort="/0/@processNetworks.0/@processes.15/@ports.1" targetProcess="/0/@processNetworks.0/@processes.24" targetPort="/0/@processNetworks.0/@processes.24/@ports.1"/>
+  <se.kth.ict.forsyde.core:Signal name="p3_beforeD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.5" sourcePort="/0/@processNetworks.0/@processes.5/@ports.2" targetProcess="/0/@processNetworks.0/@processes.16" targetPort="/0/@processNetworks.0/@processes.16/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p3_afterD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.16" sourcePort="/0/@processNetworks.0/@processes.16/@ports.1" targetProcess="/0/@processNetworks.0/@processes.25" targetPort="/0/@processNetworks.0/@processes.25/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p4_beforeD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.6" sourcePort="/0/@processNetworks.0/@processes.6/@ports.2" targetProcess="/0/@processNetworks.0/@processes.17" targetPort="/0/@processNetworks.0/@processes.17/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p4_afterD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.17" sourcePort="/0/@processNetworks.0/@processes.17/@ports.1" targetProcess="/0/@processNetworks.0/@processes.25" targetPort="/0/@processNetworks.0/@processes.25/@ports.1"/>
+  <se.kth.ict.forsyde.core:Signal name="p5_beforeD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.7" sourcePort="/0/@processNetworks.0/@processes.7/@ports.2" targetProcess="/0/@processNetworks.0/@processes.18" targetPort="/0/@processNetworks.0/@processes.18/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p5_afterD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.18" sourcePort="/0/@processNetworks.0/@processes.18/@ports.1" targetProcess="/0/@processNetworks.0/@processes.25" targetPort="/0/@processNetworks.0/@processes.25/@ports.2"/>
+  <se.kth.ict.forsyde.core:Signal name="p2_beforeD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.8" sourcePort="/0/@processNetworks.0/@processes.8/@ports.1" targetProcess="/0/@processNetworks.0/@processes.19" targetPort="/0/@processNetworks.0/@processes.19/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p2_afterD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.19" sourcePort="/0/@processNetworks.0/@processes.19/@ports.1" targetProcess="/0/@processNetworks.0/@processes.26" targetPort="/0/@processNetworks.0/@processes.26/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p3_beforeD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.9" sourcePort="/0/@processNetworks.0/@processes.9/@ports.1" targetProcess="/0/@processNetworks.0/@processes.20" targetPort="/0/@processNetworks.0/@processes.20/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p3_afterD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.20" sourcePort="/0/@processNetworks.0/@processes.20/@ports.1" targetProcess="/0/@processNetworks.0/@processes.26" targetPort="/0/@processNetworks.0/@processes.26/@ports.1"/>
+  <se.kth.ict.forsyde.core:Signal name="p4_beforeD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.10" sourcePort="/0/@processNetworks.0/@processes.10/@ports.1" targetProcess="/0/@processNetworks.0/@processes.21" targetPort="/0/@processNetworks.0/@processes.21/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="p4_afterD" moc="SDF" dataType="Int" sourceProcess="/0/@processNetworks.0/@processes.21" sourcePort="/0/@processNetworks.0/@processes.21/@ports.1" targetProcess="/0/@processNetworks.0/@processes.26" targetPort="/0/@processNetworks.0/@processes.26/@ports.2"/>
+  <se.kth.ict.forsyde.core:Signal name="a0_afterZip" moc="SDF" dataType="tuple" sourceProcess="/0/@processNetworks.0/@processes.22" sourcePort="/0/@processNetworks.0/@processes.22/@ports.2" targetProcess="/0/@processNetworks.0/@processes.27" targetPort="/0/@processNetworks.0/@processes.27/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="a1_afterZip" moc="SDF" dataType="tuple" sourceProcess="/0/@processNetworks.0/@processes.23" sourcePort="/0/@processNetworks.0/@processes.23/@ports.1" targetProcess="/0/@processNetworks.0/@processes.28" targetPort="/0/@processNetworks.0/@processes.28/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="a2_afterZip" moc="SDF" dataType="tuple" sourceProcess="/0/@processNetworks.0/@processes.24" sourcePort="/0/@processNetworks.0/@processes.24/@ports.2" targetProcess="/0/@processNetworks.0/@processes.29" targetPort="/0/@processNetworks.0/@processes.29/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="a3_afterZip" moc="SDF" dataType="tuple" sourceProcess="/0/@processNetworks.0/@processes.25" sourcePort="/0/@processNetworks.0/@processes.25/@ports.3" targetProcess="/0/@processNetworks.0/@processes.30" targetPort="/0/@processNetworks.0/@processes.30/@ports.0"/>
+  <se.kth.ict.forsyde.core:Signal name="a4_afterZip" moc="SDF" dataType="tuple" sourceProcess="/0/@processNetworks.0/@processes.26" sourcePort="/0/@processNetworks.0/@processes.26/@ports.3" targetProcess="/0/@processNetworks.0/@processes.31" targetPort="/0/@processNetworks.0/@processes.31/@ports.0"/>
+</xmi:XMI>

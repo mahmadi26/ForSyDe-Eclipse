@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<se.kth.ict.forsyde.core:System xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:se.kth.ict.forsyde.core="http://forsyde.ict.kth.se/core/forsyde">
+  <processNetworks name="top__1">
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="constant1">
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="oport1" dataType="int"/>
+      <processConstructor name="sconstant" moc="SY"/>
+      <constructorArguments name="init_val" value="3"/>
+      <constructorArguments name="take" value="10"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:CompositeProcess" name="mulacc1">
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="port_0" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="port_1" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="port_2" dataType="int"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="fifo_2_mulacc1_prime_">
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="senderInPort_mulacc1_prime" dataType="int"/>
+      <processConstructor name="sender" moc="SY"/>
+      <constructorArguments name="rank" value="0"/>
+      <constructorArguments name="id" value="3"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="fifo_1_mulacc1_prime_">
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="receiverOutPort_mulacc1_prime" dataType="int"/>
+      <processConstructor name="receiver" moc="SY"/>
+      <constructorArguments name="rank" value="0"/>
+      <constructorArguments name="id" value="2"/>
+    </processes>
+    <signals name="fifo_0" moc="SY" dataType="int" sourceProcess="//@processNetworks.0/@processes.0" sourcePort="//@processNetworks.0/@processes.0/@ports.0" targetProcess="//@processNetworks.0/@processes.1" targetPort="//@processNetworks.0/@processes.1/@ports.0"/>
+    <signals name="fifo_1_created" moc="SY" dataType="int" sourceProcess="//@processNetworks.0/@processes.3" sourcePort="//@processNetworks.0/@processes.3/@ports.0" targetProcess="//@processNetworks.0/@processes.1" targetPort="//@processNetworks.0/@processes.1/@ports.1"/>
+    <signals name="fifo_2_created" moc="SY" dataType="int" sourceProcess="//@processNetworks.0/@processes.1" sourcePort="//@processNetworks.0/@processes.1/@ports.2" targetProcess="//@processNetworks.0/@processes.2" targetPort="//@processNetworks.0/@processes.2/@ports.0"/>
+  </processNetworks>
+</se.kth.ict.forsyde.core:System>
