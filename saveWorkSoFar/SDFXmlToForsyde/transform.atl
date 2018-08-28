@@ -22,206 +22,292 @@ rule appGraphToPN {
 	using {
 		sdf : XML!Elemet = inAppGraph.children -> select (e | e.name = 'sdf') -> first() ; 	
 		actors : Sequence(XML!Element) = sdf.children -> select (e | e.name = 'actor') ;
-		oports : Sequence(XML!Element) = actors->collect(e |e.children) -> flatten() -> select (e | e.name = 'port') -> select (p | p.attribute('type').value = 'out');
+		chWithInitials : Sequence(XML!Element) = sdf.children ->select (e | e.name = 'channel') -> select (ch |not (ch.attribute('initialTokens') = OclUndefined) ) ;
 		}
 	to 
 		outPN : forsyde!ProcessNetwork (
-			--name <- inAppGraph.attribute('name').value  
-			processes <- Sequence{oports
+			name <- 'top'  
+			,processes <- Sequence {actors
 								  ,
-								  oports -> collect (op | thisModule.resolveTemp (op , 'outDelay'))
-								  ,
-								  actors -> collect (a | thisModule.resolveTemp (a , 'outZip'))
-								  ,
-								  actors -> collect (a | thisModule.resolveTemp (a , 'outUnzip'))
+								  chWithInitials -> collect(ch | thisModule.resolveTemp (ch,'delay'))
+								  } 							
 			
-									} 
-			
-										
-			,signals <- Sequence {inAppGraph.children -> select (e | e.name = 'sdf') 
-							-> first().children ->select (e | e.name = 'channel')
-							,
-							inAppGraph.children -> select (e | e.name = 'sdf')
-							->first().children->select ( e | e.name = 'channel')->collect (ch | thisModule.resolveTemp(ch,'outSignal2')) } 
-							
+			,signals <- Sequence {sdf.children ->select (e | e.name = 'channel')
+							     , 
+								 chWithInitials -> collect (ch | thisModule.resolveTemp(ch , 'sigFromDelay') )
+								 }
 		)
 }
 
 
-
-rule outPortToProcess {
+rule actorToLeafProcess {
 	from 
-		outPort : XML!Element (
-		 if outPort.name = 'port' 
-	 	 then if outPort.attribute('type').value = 'out'  
-				 then true 
-				 else false 
-				 endif 
-	   	 else false 
-		 endif
-		
-		)
-		
-			
-	to 
-		outPr : forsyde!LeafProcess (
-			name <- outPort.parent.attribute('name').value + '_' + outPort.attribute('name').value
-			,ports <- Sequence {outPort.parent.children -> select (e | e.name = 'port') -> select (p | p.attribute('type').value = 'in')->collect(e |thisModule.inPorts(e))
-								,
-								outP
-								} -> flatten()
-	--		,processConstructor <- thisModule.processConstructor('combN')
-	--		,constructorArguments <- inActor.children -> select (e | e.name = 'port')-> select (e | e.attribute('type') = 'out')
-			
-		)
-		,outDelay : forsyde!LeafProcess (
-			name <- outPort.parent.attribute('name').value + '_' + outPort.name + '_delay'
-			,ports <- Sequence {delayInP,delayOutP} -> flatten()
-	--		,processConstructor <- thisModule.processConstructor('combN')
-	--		,constructorArguments <- inActor.children -> select (e | e.name = 'port')-> select (e | e.attribute('type') = 'out')
-			
-		)
-		,outP : forsyde!OutputPort (
-			name <-  outPort.parent.attribute('name').value + '_' + outPort.attribute('name').value + '_out'
-			,moc <- 'SDF'
-			,dataType <- 'Int'	
-		)
-		,delayInP : forsyde!InputPort (
-			name <-   outPort.attribute('name').value + '_delayIn'
-			,moc <- 'SDF'
-			,dataType <- 'Int'	
-		)
-		,delayOutP : forsyde!OutputPort (
-			name <-   outPort.attribute('name').value + '_delayOut'
-			,moc <- 'SDF'
-			,dataType <- 'Int'	
-		)
-		,sigBeforeDelay : forsyde!Signal (
-			name <- outPort.attribute('name').value + '_beforeD' 
-			,moc <- 'SDF' 
-			,dataType <- 'Int' 
-			,sourceProcess <- outPr
-			,targetProcess <- outDelay  					   
-			,sourcePort <- outP
-			,targetPort <- delayInP
-		)
-		,sigAfterDelay : forsyde!Signal (
-			name <- outPort.attribute('name').value + '_afterD' 
-			,moc <- 'SDF' 
-			,dataType <- 'Int' 
-			,sourceProcess <- outDelay
-			,targetProcess <- thisModule.resolveTemp(outPort.parent,'outZip')
-			,sourcePort <- delayOutP
-			,targetPort <- inPZip
-		)
-		,inPZip : forsyde!InputPort (
-			name <-  outPort.parent.attribute('name').value  + outPort.attribute('name').value + '_inZip'
-			,moc <- 'SDF'
-			,dataType <- 'Int'	
-		)
-		,outPZip : forsyde!InputPort (
-			name <-  outPort.parent.attribute('name').value  + outPort.attribute('name').value + '_outUnzip'
-			,moc <- 'SDF'
-			,dataType <- 'Int'	
-		)
-		
-}
-
-rule actorToZipUnzip {
-	from 
-		inActor : XML!Element (
-		  inActor.name = 'actor'
-		)
-		
-			
-	to 
-		outZip : forsyde!LeafProcess (
-			name <- inActor.attribute('name').value + '_zip' 
-			,ports <- Sequence {inActor.children -> select (e | if e.name = 'port' then if e.attribute('type').value = 'out' then true else false endif else false endif )
-													-> collect ( op | thisModule.resolveTemp(op,'inPZip'))
-								,
-								outPZip 
-								} -> flatten()
-			
-	--		,processConstructor <- thisModule.processConstructor('combN')						-- make it right
-	--		,constructorArguments <- inActor.children -> select (e | e.name = 'port')-> select (e | e.attribute('type') = 'out')		--make it right
-			
-		)
-		,outUnzip : forsyde!LeafProcess (
-			name <- inActor.attribute('name').value + '_unzip' 
-			,ports <- Sequence {inPUnzip
-								,
-								inActor.children -> select (e | if e.name = 'port' then if e.attribute('type').value = 'out' then true else false endif else false endif )
-													-> collect ( op | thisModule.resolveTemp(op,'outPZip'))
-								} -> flatten()
-	--		,processConstructor <- thisModule.processConstructor('combN')						-- make it right
-	--		,constructorArguments <- inActor.children -> select (e | e.name = 'port')-> select (e | e.attribute('type') = 'out')		--make it right
-		
-		)
-		,outPZip : forsyde!OutputPort (
-			name <- inActor.attribute('name').value + '_zipOut'
-			,moc <- 'SDF'
-			,dataType <- 'tuple'	
-		)
-		,inPUnzip : forsyde!InputPort (
-			name <- inActor.attribute('name').value + '_unzipIn'
-			,moc <- 'SDF'
-			,dataType <- 'tuple'	
-		)
-		,zipUnzipSig : forsyde!Signal (
-			name <- inActor.attribute('name').value + '_afterZip'	
-			,moc <- 'SDF' 
-			,dataType <- 'tuple' 
-			,sourceProcess <- outZip
-			,targetProcess <- outUnzip
-			,sourcePort <- outPZip
-			,targetPort <- inPUnzip
-		)
-		
-}
-
-rule channelToSignal {
-	from 
-		 ch : XML!Element 
-		,inP : XML!Element
-		,outP : XML!Element(
-		 if ch.name = 'channel'
+		actor : XML!Element ( 
+		 if actor.name = 'actor'
 		 then 
-		 	if inP.name = 'port'
-			then 
-				if ch.attribute('srcPort').value = inP.attribute('name').value
-				then true 
-				else false 
-				endif 
+		 	if ((actor.children-> flatten() -> select (e | e.name = 'port') -> select (p | p.attribute('type').value = 'out').size()) <=1 )
+			then true 
 			else false 
 			endif 
-		 else false 
-		 endif
+		else false 
+		endif
 		)
+	using {
+		-- following causes problem in actors with no input port
+		inports : Sequence(XML!Element) = actor.children -> flatten() -> select (e | e.name = 'port') -> select (p | p.attribute('type').value = 'in');	
+		-- following causes error in processes with no output ports
+		oport : XML!Element = actor.children -> flatten() -> select (e | e.name = 'port') -> select (p | p.attribute('type').value = 'out')->first();			
+
+	}
 	to 
-		 Sig : forsyde!Signal (
-		--	name <- inActor.attribute('name').value + '_afterZip'	
-		--	,moc <- 'SDF' 
-		--	,dataType <- 'tuple' 
-		--	,sourceProcess <- outZip
-		--	,targetProcess <- outUnzip
-		--	,sourcePort <- outPZip
-		--	,targetPort <- inPUnzip
+		outPr : forsyde!LeafProcess (
+			name <- actor.attribute('name').value 
+			,ports <- actor.children -> select (e | e.name = 'port') 				
+			,processConstructor <- thisModule.processConstructor('comb'+ inports.size().toString())
+			,constructorArguments <- Sequence {thisModule.constructorArgument('_func','vector_func'),thisModule.constructorArgument('o1toks',oport.attribute('rate').value.toString())
+												,inports -> collect (a |
+													thisModule.constructorArgument('i'.concat(inports->indexOf(a).toString()).concat('toks'),a.attribute('rate').value.toString()))
+												}->flatten()
+			
 		)
 	
 }
-lazy rule inPorts { 
+
+
+rule actorToCompositeProcess {
 	from 
-		inPort : XML!Element 
-	to 
-		outPort : forsyde!InputPort (
-			name <- inPort.attribute('name').value
+		actor : XML!Element ( 
+		 if actor.name = 'actor'
+		 then 
+		 	if ((actor.children -> flatten() -> select (e | e.name = 'port') -> select (p | p.attribute('type').value = 'out').size()) >1 )
+			then true 
+			else false 
+			endif 
+		else false 
+		endif
+		)
+	using {
+		-- following causes problem in actors with no input port
+		inports : Sequence(XML!Element) = actor.children -> flatten() -> select (e | e.name = 'port') -> select (p | p.attribute('type').value = 'in');	
+		oports : XML!Element = actor.children -> flatten() -> select (e | e.name = 'port') -> select (p | p.attribute('type').value = 'out');			
+
+	}
+	to outCPr : forsyde!CompositeProcess (
+			name <- actor.attribute('name').value 
+			,ports <- actor.children -> select (e | e.name = 'port') 				
+			,component <- outPN
+	   )
+	   ,outPN : forsyde!ProcessNetwork (  
+			processes <- Sequence {outLeaf, outUnzip} 							
+			,signals <- outSig	
+	   )
+	   ,outLeaf : forsyde!LeafProcess (
+	   	name <- actor.attribute('name').value +'_oneOutput'
+			,ports <- Sequence {outP , inports -> collect (ip | thisModule.resolveTemp(ip,'leafInP'))} 				
+			,processConstructor <- thisModule.processConstructor('comb'+ inports.size().toString())
+			,constructorArguments <- Sequence {thisModule.constructorArgument('_func','tuple_vector_func'),thisModule.constructorArgument('o1toks','1')
+												,inports -> collect (a |
+													thisModule.constructorArgument('i'.concat(inports->indexOf(a).toString()).concat('toks'),a.attribute('rate').value.toString()))
+												}->flatten()
+	   )
+	   ,outUnzip : forsyde!LeafProcess (
+	   	name <- actor.attribute('name').value + '_unzip' 
+			,ports <- Sequence {oports-> collect (op | thisModule.resolveTemp(op,'unzipOutP')),unzipIP}  				
+			,processConstructor <- thisModule.processConstructor('unzipN')
+			,constructorArguments <- Sequence {thisModule.constructorArgument('_func','tuple_vector_func'),thisModule.constructorArgument('i1toks','1')
+												,oports -> collect (a |
+													thisModule.constructorArgument('o'.concat(oports->indexOf(a).toString()).concat('toks'),a.attribute('rate').value.toString()))
+												}->flatten()
+	   )
+	   ,outSig : forsyde!Signal (
+	   		name <- actor.attribute('name').value + '_toUnzip' 
+			,moc <- 'SDF' 
+			,dataType <- outP.dataType 
+			,sourceProcess <- outLeaf
+			,targetProcess <- outUnzip  					   
+			,sourcePort <- outP
+			,targetPort <- unzipIP	   
+			)
+	   ,outP : forsyde!OutputPort (
+	   		name <-  actor.attribute('name').value + '_out'
 			,moc <- 'SDF'
-			,dataType <- 'Int'
+			,dataType <- 'St5tupleIJSt6vectorIfSaIfEES2_EE'	
+	   )
+	   ,unzipIP : forsyde!InputPort (
+	   		name <-  outUnzip.name + '_in'
+	   		,moc <- 'SDF'
+			,dataType <- 'St5tupleIJSt6vectorIfSaIfEES2_EE'
+	   )
+}
+
+
+
+rule channelToSignalNoInitials {
+	from 
+		 ch : XML!Element 
+		(
+			if  ch.name = 'channel'
+			then if ch.attribute('initialTokens') = OclUndefined
+				 then true
+				 else false 
+				 endif 
+			else false 
+			endif
+		)
+	to 
+		 Sig : forsyde!Signal (
+			name <- ch.attribute('name').value 	
+			,moc <- 'SDF' 
+			,dataType <- 'vector<int>' 
+			,sourceProcess <- ch.parent.children -> select (e | e.name = 'actor') -> select (a | ch.attribute('srcActor').value = a.attribute('name').value) -> first()
+			,targetProcess <- ch.parent.children -> select (e | e.name = 'actor') -> select (a | ch.attribute('dstActor').value = a.attribute('name').value) -> first()
+			,sourcePort <- ch.parent.children -> select (e | e.name = 'actor') 
+							-> select (a | ch.attribute('srcActor').value = a.attribute('name').value) -> first().children 
+							->select (e | e.name = 'port') -> select (p | ch.attribute('srcPort').value = p.attribute('name').value)->first()
+			,targetPort <- ch.parent.children -> select (e | e.name = 'actor') 
+							-> select (a | ch.attribute('dstActor').value = a.attribute('name').value) -> first().children 
+							->select (e | e.name = 'port') -> select (p | ch.attribute('dstPort').value = p.attribute('name').value)->first()
+		)
+	
+}
+
+rule channelToSignalInitials {
+	from 
+		 ch : XML!Element 
+		(
+			if  ch.name = 'channel'
+			then if ch.attribute('initialTokens') = OclUndefined
+				 then false 
+				 else true 
+				 endif 
+			else false 
+			endif
+		)
+	to 
+		 sigToDelay : forsyde!Signal (
+			name <- ch.attribute('name').value + '_beforeD' 	
+			,moc <- 'SDF' 
+			,dataType <- 'vector<int>' 
+			,sourceProcess <- ch.parent.children -> select (e | e.name = 'actor') -> select (a | ch.attribute('srcActor').value = a.attribute('name').value) -> first()
+			,targetProcess <- delay
+			,sourcePort <- ch.parent.children -> select (e | e.name = 'actor') 
+							-> select (a | ch.attribute('srcActor').value = a.attribute('name').value) -> first().children 
+							->select (e | e.name = 'port') -> select (p | ch.attribute('srcPort').value = p.attribute('name').value)->first()
+			,targetPort <- delayInP
+		)
+		,sigFromDelay : forsyde!Signal (
+			name <- ch.attribute('name').value + '_afterD' 	
+			,moc <- 'SDF' 
+			,dataType <- 'vector<int>' 
+			,sourceProcess <- delay
+			,targetProcess <- ch.parent.children -> select (e | e.name = 'actor') -> select (a | ch.attribute('dstActor').value = a.attribute('name').value) -> first()
+			,sourcePort <- delayOutP
+			,targetPort <- ch.parent.children -> select (e | e.name = 'actor') 
+							-> select (a | ch.attribute('dstActor').value = a.attribute('name').value) -> first().children 
+							->select (e | e.name = 'port') -> select (p | ch.attribute('dstPort').value = p.attribute('name').value)->first()
+		)
+		,delay : forsyde!LeafProcess (
+			name <- 'delay' + ch.attribute('name').value 
+			,ports <- Sequence {delayOutP,delayInP}  				
+--			,processConstructor <- thisModule.processConstructor('delayN')
+--			,constructorArguments <- Sequence {'0',ch.attribute('initialTokens').value.toString())
+			
+		)
+		, delayInP : forsyde!InputPort ( 
+			name <-  delay.name + '_in'
+			,moc <- 'SDF'
+			,dataType <- 'vector<int>'	
+		)
+		,delayOutP : forsyde!OutputPort (
+			name <-  delay.name + '_out'
+			,moc <- 'SDF'
+			,dataType <- 'vector<int>'		)
+	
+}
+
+rule portsToInPorts {
+	from 
+		p : XML!Element (
+			if p.name = 'port'
+			then if p.attribute('type').value = 'in'
+				 then true 
+				 else false 
+				 endif 
+			else false 
+			endif
+		) 
+	to 
+		outP : forsyde!InputPort (
+			name <-  p.attribute('name').value 
+			,moc <- 'SDF'
+			,dataType <- 'vector<int>'	
+		)
+		,leafInP : forsyde!InputPort (
+			name <-  p.attribute('name').value + '_leaf' 
+			,moc <- 'SDF'
+			,dataType <- 'vector<int>'
+			,boundPort <- outP
+			,boundProcess <- p.parent
+		)
+}
+rule portsToOutPorts {
+	from 
+		p : XML!Element (
+			if p.name = 'port'
+			then if p.attribute('type').value = 'out'
+				 then true 
+				 else false 
+				 endif 
+			else false 
+			endif
+		) 
+	to 
+		outP : forsyde!OutputPort (
+			name <-  p.attribute('name').value 
+			,moc <- 'SDF'
+			,dataType <- 'vector<int>'	
+		)
+		,unzipOutP : forsyde!OutputPort (
+			name <-  p.attribute('name').value + '_unzip' 
+			,moc <- 'SDF'
+			,dataType <- 'vector<int>'
+			,boundPort <- outP
+			,boundProcess <- p.parent
 		)
 }
 
 
+
+
+
+
+
+
+
+-- lazy rules 
+
+
+
+lazy rule processConstructor {
+	from 
+		pc : String 
+	to 
+		outPC : forsyde!ProcessConstructor (
+			name <- pc 
+			,moc <- 'SDF'
+		)
+}
+
+lazy rule constructorArgument {
+	from 
+		inName : String
+		,inValue : String
+	to 
+		outPC : forsyde!ConstructorArgument (
+			name <- inName 
+			,value <- inValue
+		)
+}
 
 
 
