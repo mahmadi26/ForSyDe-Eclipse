@@ -8,9 +8,8 @@
 	
 	[comment @main /]
 	[generateMain(aSystem)/]
-	[for (pn : ProcessNetwork | aSystem.processNetworks)]
-		[generateProcessNetwork(pn)/]
-	[/for]
+	[generateProcessNetwork(aSystem.processNetworks->first())/]
+
 	
 	
 [/template]

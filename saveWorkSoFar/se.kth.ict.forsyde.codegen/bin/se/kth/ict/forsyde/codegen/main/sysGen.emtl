@@ -4,40 +4,34 @@
     <input>
       <takesTypesFrom href="http://forsyde.ict.kth.se/core/forsyde#/"/>
     </input>
-    <imports href="../../../../../../files/mainGen.emtl#/0"/>
+    <imports href="platform:/resource/se.kth.ict.forsyde.codegen/bin/files/mainGen.emtl#/0"/>
     <imports href="../../../../../../files/pnGen.emtl#/0"/>
     <ownedModuleElement xsi:type="mtl:Template" name="fsdsyscgenSystem" visibility="Public" main="true">
       <body xsi:type="ocl.ecore:StringLiteralExp" stringSymbol="&#x9;&#xA;"/>
       <body xsi:type="ocl.ecore:StringLiteralExp" stringSymbol="&#x9;"/>
       <body xsi:type="mtl:TemplateInvocation">
         <eType xsi:type="ocl.ecore:PrimitiveType" href="http://www.eclipse.org/ocl/1.1.0/oclstdlib.ecore#/0/String"/>
-        <definition href="../../../../../../files/mainGen.emtl#/0/generateMain"/>
+        <definition href="platform:/resource/se.kth.ict.forsyde.codegen/bin/files/mainGen.emtl#/0/generateMain"/>
         <argument xsi:type="ocl.ecore:VariableExp" name="aSystem" referredVariable="/0/fsdsyscgenSystem/aSystem">
           <eType xsi:type="ecore:EClass" href="http://forsyde.ict.kth.se/core/forsyde#//System"/>
         </argument>
       </body>
-      <body xsi:type="ocl.ecore:StringLiteralExp" stringSymbol="&#xA;"/>
-      <body xsi:type="mtl:ForBlock">
-        <body xsi:type="ocl.ecore:StringLiteralExp" stringSymbol="&#x9;&#x9;"/>
-        <body xsi:type="mtl:TemplateInvocation">
-          <eType xsi:type="ocl.ecore:PrimitiveType" href="http://www.eclipse.org/ocl/1.1.0/oclstdlib.ecore#/0/String"/>
-          <definition href="../../../../../../files/pnGen.emtl#/0/generateProcessNetwork"/>
-          <argument xsi:type="ocl.ecore:VariableExp" name="pn" referredVariable="/0/fsdsyscgenSystem/%.4/pn">
-            <eType xsi:type="ecore:EClass" href="http://forsyde.ict.kth.se/core/forsyde#//ProcessNetwork"/>
-          </argument>
-        </body>
-        <body xsi:type="ocl.ecore:StringLiteralExp" stringSymbol="&#xA;"/>
-        <loopVariable name="pn">
+      <body xsi:type="ocl.ecore:StringLiteralExp" stringSymbol="&#xA;&#x9;"/>
+      <body xsi:type="mtl:TemplateInvocation">
+        <eType xsi:type="ocl.ecore:PrimitiveType" href="http://www.eclipse.org/ocl/1.1.0/oclstdlib.ecore#/0/String"/>
+        <definition href="../../../../../../files/pnGen.emtl#/0/generateProcessNetwork"/>
+        <argument xsi:type="ocl.ecore:OperationCallExp">
           <eType xsi:type="ecore:EClass" href="http://forsyde.ict.kth.se/core/forsyde#//ProcessNetwork"/>
-        </loopVariable>
-        <iterSet xsi:type="ocl.ecore:PropertyCallExp" eType="/7/OrderedSet(ProcessNetwork)">
-          <source xsi:type="ocl.ecore:VariableExp" name="aSystem" referredVariable="/0/fsdsyscgenSystem/aSystem">
-            <eType xsi:type="ecore:EClass" href="http://forsyde.ict.kth.se/core/forsyde#//System"/>
+          <source xsi:type="ocl.ecore:PropertyCallExp" eType="/7/OrderedSet(ProcessNetwork)">
+            <source xsi:type="ocl.ecore:VariableExp" name="aSystem" referredVariable="/0/fsdsyscgenSystem/aSystem">
+              <eType xsi:type="ecore:EClass" href="http://forsyde.ict.kth.se/core/forsyde#//System"/>
+            </source>
+            <referredProperty xsi:type="ecore:EReference" href="http://forsyde.ict.kth.se/core/forsyde#//System/processNetworks"/>
           </source>
-          <referredProperty xsi:type="ecore:EReference" href="http://forsyde.ict.kth.se/core/forsyde#//System/processNetworks"/>
-        </iterSet>
+          <referredOperation xsi:type="ecore:EOperation" href="http://www.eclipse.org/ocl/1.1.0/oclstdlib.ecore#/0/OrderedSet(T)_Class/first"/>
+        </argument>
       </body>
-      <body xsi:type="ocl.ecore:StringLiteralExp" stringSymbol="&#x9;&#xA;&#x9;"/>
+      <body xsi:type="ocl.ecore:StringLiteralExp" stringSymbol="&#xA;&#xA;&#x9;&#xA;&#x9;"/>
       <parameter name="aSystem">
         <eType xsi:type="ecore:EClass" href="http://forsyde.ict.kth.se/core/forsyde#//System"/>
       </parameter>
@@ -78,7 +72,7 @@
           <contents xsi:type="ocl.ecore:Constraint"/>
         </eAnnotations>
         <eAnnotations source="MTL">
-          <references href="../../../../../../files/mainGen.emtl#/0/generateMain"/>
+          <references href="platform:/resource/se.kth.ict.forsyde.codegen/bin/files/mainGen.emtl#/0/generateMain"/>
         </eAnnotations>
         <eType xsi:type="ocl.ecore:PrimitiveType" href="http://www.eclipse.org/ocl/1.1.0/oclstdlib.ecore#/0/String"/>
         <eParameters name="aSystem">
@@ -133,9 +127,24 @@
         <references href="http://forsyde.ict.kth.se/core/forsyde#//Port"/>
       </eAnnotations>
     </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="forsyde_InputPort_Class">
+      <eAnnotations source="http://www.eclipse.org/ocl/1.1.0/OCL">
+        <references href="http://forsyde.ict.kth.se/core/forsyde#//InputPort"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="forsyde_OutputPort_Class">
+      <eAnnotations source="http://www.eclipse.org/ocl/1.1.0/OCL">
+        <references href="http://forsyde.ict.kth.se/core/forsyde#//OutputPort"/>
+      </eAnnotations>
+    </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="forsyde_ConstructorArgument_Class">
       <eAnnotations source="http://www.eclipse.org/ocl/1.1.0/OCL">
         <references href="http://forsyde.ict.kth.se/core/forsyde#//ConstructorArgument"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="forsyde_CompositeProcess_Class">
+      <eAnnotations source="http://www.eclipse.org/ocl/1.1.0/OCL">
+        <references href="http://forsyde.ict.kth.se/core/forsyde#//CompositeProcess"/>
       </eAnnotations>
     </eClassifiers>
   </ecore:EPackage>
@@ -163,24 +172,12 @@
     <eType xsi:type="ecore:EClass" href="http://forsyde.ict.kth.se/core/forsyde#//System"/>
   </ocl.ecore:Variable>
   <ocl.ecore:Variable name="self">
-    <eType xsi:type="ecore:EClass" href="http://forsyde.ict.kth.se/core/forsyde#//ProcessNetwork"/>
-  </ocl.ecore:Variable>
-  <ocl.ecore:Variable name="self">
-    <eType xsi:type="ecore:EClass" href="http://forsyde.ict.kth.se/core/forsyde#//ProcessNetwork"/>
-  </ocl.ecore:Variable>
-  <ocl.ecore:Variable name="self">
-    <eType xsi:type="ecore:EClass" href="http://forsyde.ict.kth.se/core/forsyde#//System"/>
-  </ocl.ecore:Variable>
-  <ocl.ecore:Variable name="i">
-    <eType xsi:type="ocl.ecore:PrimitiveType" href="http://www.eclipse.org/ocl/1.1.0/oclstdlib.ecore#/0/Integer"/>
-  </ocl.ecore:Variable>
-  <ocl.ecore:Variable name="self">
     <eType xsi:type="ecore:EClass" href="http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
   </ocl.ecore:Variable>
   <ecore:EAnnotation source="positions">
     <eAnnotations source="positions.0" references="/0/fsdsyscgenSystem">
       <details key="start" value="138"/>
-      <details key="end" value="348"/>
+      <details key="end" value="315"/>
       <details key="line" value="7"/>
     </eAnnotations>
     <eAnnotations source="positions.1" references="/0/fsdsyscgenSystem/%">
@@ -205,55 +202,35 @@
     </eAnnotations>
     <eAnnotations source="positions.5" references="/0/fsdsyscgenSystem/%.3">
       <details key="start" value="237"/>
-      <details key="end" value="238"/>
+      <details key="end" value="239"/>
       <details key="line" value="11"/>
     </eAnnotations>
     <eAnnotations source="positions.6" references="/0/fsdsyscgenSystem/%.4">
-      <details key="start" value="239"/>
-      <details key="end" value="332"/>
-      <details key="line" value="11"/>
+      <details key="start" value="240"/>
+      <details key="end" value="296"/>
+      <details key="line" value="0"/>
     </eAnnotations>
     <eAnnotations source="positions.7" references="/0/fsdsyscgenSystem/%.4/%">
-      <details key="start" value="293"/>
+      <details key="start" value="263"/>
       <details key="end" value="295"/>
+      <details key="line" value="0"/>
+    </eAnnotations>
+    <eAnnotations source="positions.8" references="/0/fsdsyscgenSystem/%.4/%/%">
+      <details key="start" value="263"/>
+      <details key="end" value="286"/>
+      <details key="line" value="0"/>
+    </eAnnotations>
+    <eAnnotations source="positions.9" references="/0/fsdsyscgenSystem/%.4/%/%/aSystem">
+      <details key="start" value="263"/>
+      <details key="end" value="270"/>
+      <details key="line" value="0"/>
+    </eAnnotations>
+    <eAnnotations source="positions.10" references="/0/fsdsyscgenSystem/%.5">
+      <details key="start" value="298"/>
+      <details key="end" value="303"/>
       <details key="line" value="12"/>
     </eAnnotations>
-    <eAnnotations source="positions.8" references="/0/fsdsyscgenSystem/%.4/%.1">
-      <details key="start" value="296"/>
-      <details key="end" value="322"/>
-      <details key="line" value="0"/>
-    </eAnnotations>
-    <eAnnotations source="positions.9" references="/0/fsdsyscgenSystem/%.4/%.1/pn">
-      <details key="start" value="319"/>
-      <details key="end" value="321"/>
-      <details key="line" value="0"/>
-    </eAnnotations>
-    <eAnnotations source="positions.10" references="/0/fsdsyscgenSystem/%.4/%.2">
-      <details key="start" value="324"/>
-      <details key="end" value="325"/>
-      <details key="line" value="13"/>
-    </eAnnotations>
-    <eAnnotations source="positions.11" references="/0/fsdsyscgenSystem/%.4/pn">
-      <details key="start" value="245"/>
-      <details key="end" value="264"/>
-      <details key="line" value="11"/>
-    </eAnnotations>
-    <eAnnotations source="positions.12" references="/0/fsdsyscgenSystem/%.4/%.3">
-      <details key="start" value="267"/>
-      <details key="end" value="290"/>
-      <details key="line" value="0"/>
-    </eAnnotations>
-    <eAnnotations source="positions.13" references="/0/fsdsyscgenSystem/%.4/%.3/aSystem">
-      <details key="start" value="267"/>
-      <details key="end" value="274"/>
-      <details key="line" value="0"/>
-    </eAnnotations>
-    <eAnnotations source="positions.14" references="/0/fsdsyscgenSystem/%.5">
-      <details key="start" value="333"/>
-      <details key="end" value="336"/>
-      <details key="line" value="14"/>
-    </eAnnotations>
-    <eAnnotations source="positions.15" references="/0/fsdsyscgenSystem/aSystem">
+    <eAnnotations source="positions.11" references="/0/fsdsyscgenSystem/aSystem">
       <details key="start" value="172"/>
       <details key="end" value="188"/>
       <details key="line" value="7"/>

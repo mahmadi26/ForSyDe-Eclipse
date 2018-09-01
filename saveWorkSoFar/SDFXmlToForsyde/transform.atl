@@ -64,7 +64,7 @@ rule actorToLeafProcess {
 			name <- actor.attribute('name').value 
 			,ports <- actor.children -> select (e | e.name = 'port') 				
 			,processConstructor <- thisModule.processConstructor('comb'+ inports.size().toString())
-			,constructorArguments <- Sequence {thisModule.constructorArgument('_func','vector_func'),thisModule.constructorArgument('o1toks',oport.attribute('rate').value.toString())
+			,constructorArguments <- Sequence {thisModule.constructorArgument('_func',actor.attribute('name').value.concat('_vector_func')),thisModule.constructorArgument('o1toks',oport.attribute('rate').value.toString())
 												,inports -> collect (a |
 													thisModule.constructorArgument('i'.concat(inports->indexOf(a).toString()).concat('toks'),a.attribute('rate').value.toString()))
 												}->flatten()
@@ -105,8 +105,9 @@ rule actorToCompositeProcess {
 	   	name <- actor.attribute('name').value +'_oneOutput'
 			,ports <- Sequence {outP , inports -> collect (ip | thisModule.resolveTemp(ip,'leafInP'))} 				
 			,processConstructor <- thisModule.processConstructor('comb'+ inports.size().toString())
-			,constructorArguments <- Sequence {thisModule.constructorArgument('_func','tuple_vector_func'),thisModule.constructorArgument('o1toks','1')
-												,inports -> collect (a |
+			,constructorArguments <- Sequence {thisModule.constructorArgument('_func',actor.attribute('name').value.concat('_tuple_vector_func'))
+													,thisModule.constructorArgument('o1toks','1')
+													,inports -> collect (a |
 													thisModule.constructorArgument('i'.concat(inports->indexOf(a).toString()).concat('toks'),a.attribute('rate').value.toString()))
 												}->flatten()
 	   )
@@ -114,7 +115,7 @@ rule actorToCompositeProcess {
 	   	name <- actor.attribute('name').value + '_unzip' 
 			,ports <- Sequence {oports-> collect (op | thisModule.resolveTemp(op,'unzipOutP')),unzipIP}  				
 			,processConstructor <- thisModule.processConstructor('unzipN')
-			,constructorArguments <- Sequence {thisModule.constructorArgument('_func','tuple_vector_func'),thisModule.constructorArgument('i1toks','1')
+			,constructorArguments <- Sequence {thisModule.constructorArgument('_func','tuple_vector_func')
 												,oports -> collect (a |
 													thisModule.constructorArgument('o'.concat(oports->indexOf(a).toString()).concat('toks'),a.attribute('rate').value.toString()))
 												}->flatten()
@@ -122,7 +123,7 @@ rule actorToCompositeProcess {
 	   ,outSig : forsyde!Signal (
 	   		name <- actor.attribute('name').value + '_toUnzip' 
 			,moc <- 'SDF' 
-			,dataType <- outP.dataType 
+			,dataType <- 'tuple<vector<int>...>' 
 			,sourceProcess <- outLeaf
 			,targetProcess <- outUnzip  					   
 			,sourcePort <- outP
@@ -131,12 +132,12 @@ rule actorToCompositeProcess {
 	   ,outP : forsyde!OutputPort (
 	   		name <-  actor.attribute('name').value + '_out'
 			,moc <- 'SDF'
-			,dataType <- 'St5tupleIJSt6vectorIfSaIfEES2_EE'	
+			,dataType <- 'tuple<int...>'	
 	   )
 	   ,unzipIP : forsyde!InputPort (
 	   		name <-  outUnzip.name + '_in'
 	   		,moc <- 'SDF'
-			,dataType <- 'St5tupleIJSt6vectorIfSaIfEES2_EE'
+			,dataType <- 'tuple<int...>'
 	   )
 }
 
@@ -158,7 +159,7 @@ rule channelToSignalNoInitials {
 		 Sig : forsyde!Signal (
 			name <- ch.attribute('name').value 	
 			,moc <- 'SDF' 
-			,dataType <- 'vector<int>' 
+			,dataType <- 'array<int,' + ch.parent.parent.children -> select (e | e.name = 'sdfProperties')->first().children -> select (e | e.name = 'channelProperties')->select (e | e.attribute('channel').value = ch.attribute('name').value)->first().children -> select (e | e.name = 'tokenSize') -> first().attribute('sz').value.toString() + '>' 
 			,sourceProcess <- ch.parent.children -> select (e | e.name = 'actor') -> select (a | ch.attribute('srcActor').value = a.attribute('name').value) -> first()
 			,targetProcess <- ch.parent.children -> select (e | e.name = 'actor') -> select (a | ch.attribute('dstActor').value = a.attribute('name').value) -> first()
 			,sourcePort <- ch.parent.children -> select (e | e.name = 'actor') 
@@ -187,7 +188,7 @@ rule channelToSignalInitials {
 		 sigToDelay : forsyde!Signal (
 			name <- ch.attribute('name').value + '_beforeD' 	
 			,moc <- 'SDF' 
-			,dataType <- 'vector<int>' 
+			,dataType <- 'array<int,' + ch.parent.parent.children -> select (e | e.name = 'sdfProperties')->first().children -> select (e | e.name = 'channelProperties')->select (e | e.attribute('channel').value = ch.attribute('name').value)->first().children -> select (e | e.name = 'tokenSize') -> first().attribute('sz').value.toString() + '>' 
 			,sourceProcess <- ch.parent.children -> select (e | e.name = 'actor') -> select (a | ch.attribute('srcActor').value = a.attribute('name').value) -> first()
 			,targetProcess <- delay
 			,sourcePort <- ch.parent.children -> select (e | e.name = 'actor') 
@@ -198,7 +199,7 @@ rule channelToSignalInitials {
 		,sigFromDelay : forsyde!Signal (
 			name <- ch.attribute('name').value + '_afterD' 	
 			,moc <- 'SDF' 
-			,dataType <- 'vector<int>' 
+			,dataType <- 'array<int,' + ch.parent.parent.children -> select (e | e.name = 'sdfProperties')->first().children -> select (e | e.name = 'channelProperties')->select (e | e.attribute('channel').value = ch.attribute('name').value)->first().children -> select (e | e.name = 'tokenSize') -> first().attribute('sz').value.toString() + '>' 
 			,sourceProcess <- delay
 			,targetProcess <- ch.parent.children -> select (e | e.name = 'actor') -> select (a | ch.attribute('dstActor').value = a.attribute('name').value) -> first()
 			,sourcePort <- delayOutP
@@ -209,19 +210,22 @@ rule channelToSignalInitials {
 		,delay : forsyde!LeafProcess (
 			name <- 'delay' + ch.attribute('name').value 
 			,ports <- Sequence {delayOutP,delayInP}  				
---			,processConstructor <- thisModule.processConstructor('delayN')
---			,constructorArguments <- Sequence {'0',ch.attribute('initialTokens').value.toString())
+			,processConstructor <- thisModule.processConstructor('delayn')
+			,constructorArguments <- Sequence {thisModule.constructorArgument('init_val','0')
+											   ,
+											   thisModule.constructorArgument('n',ch.attribute('initialTokens').value.toString())
+											   }
 			
 		)
 		, delayInP : forsyde!InputPort ( 
 			name <-  delay.name + '_in'
 			,moc <- 'SDF'
-			,dataType <- 'vector<int>'	
+			,dataType <- 'int'	
 		)
 		,delayOutP : forsyde!OutputPort (
 			name <-  delay.name + '_out'
 			,moc <- 'SDF'
-			,dataType <- 'vector<int>'		)
+			,dataType <- 'int'		)
 	
 }
 
@@ -240,12 +244,12 @@ rule portsToInPorts {
 		outP : forsyde!InputPort (
 			name <-  p.attribute('name').value 
 			,moc <- 'SDF'
-			,dataType <- 'vector<int>'	
+			,dataType <- 'int'	
 		)
 		,leafInP : forsyde!InputPort (
 			name <-  p.attribute('name').value + '_leaf' 
 			,moc <- 'SDF'
-			,dataType <- 'vector<int>'
+			,dataType <- 'int'
 			,boundPort <- outP
 			,boundProcess <- p.parent
 		)
@@ -265,12 +269,12 @@ rule portsToOutPorts {
 		outP : forsyde!OutputPort (
 			name <-  p.attribute('name').value 
 			,moc <- 'SDF'
-			,dataType <- 'vector<int>'	
+			,dataType <- 'int'	
 		)
 		,unzipOutP : forsyde!OutputPort (
 			name <-  p.attribute('name').value + '_unzip' 
 			,moc <- 'SDF'
-			,dataType <- 'vector<int>'
+			,dataType <- 'int'
 			,boundPort <- outP
 			,boundProcess <- p.parent
 		)
@@ -293,7 +297,7 @@ lazy rule processConstructor {
 		pc : String 
 	to 
 		outPC : forsyde!ProcessConstructor (
-			name <- pc 
+			name <- thisModule.trim(pc)  
 			,moc <- 'SDF'
 		)
 }
@@ -313,8 +317,13 @@ lazy rule constructorArgument {
 
 -- helpers
 
-
-
+helper def : trim(s : String) : String = 
+	if s = 'comb1' 
+	then 'comb'
+	else s
+	endif 
+	
+;
 
 helper context XML!Element def : attribute(attName: String) : XML!Attribute = 
 	self.children->select(a | a.name=attName)->first()
