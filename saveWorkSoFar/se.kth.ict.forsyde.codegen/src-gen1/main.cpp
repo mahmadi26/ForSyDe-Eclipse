@@ -1,4 +1,4 @@
-#include "top__1.hpp"
+#include "top.hpp"
 #include <mpi.h>
 
 
@@ -6,7 +6,7 @@ int sc_main(int argc, char **argv)
 {
     MPI_Init(&argc,&argv);
    
-    top__1 top1("top__11");
+    top top1("top1");
 
     sc_start();
    

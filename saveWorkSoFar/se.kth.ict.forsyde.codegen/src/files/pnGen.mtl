@@ -5,24 +5,62 @@
 [file (pn.name.concat('.hpp'), false, 'UTF-8')]
 #include <forsyde.hpp>
 #include <iostream>
+using namespace std ; 
 
-[for ( cp : CompositeProcess | pn.processes -> filter(CompositeProcess) )]
-[compositesLeafFunctionality(cp)/] 
-[/for]
-
-[comment Including the functionality of leaf processes if has a function argument/]
-[for (lp : LeafProcess | pn.processes->filter(LeafProcess))]
+[comment Including the functionality of leaf processes which do not need changing to one output form if has a function argument /]
+[for (lp : LeafProcess | pn.processes -> filter(LeafProcess))]
 [if (not ((lp.processConstructor.name = 'sender') or (lp.processConstructor.name = 'receiver') or 
-		  (lp.processConstructor.name = 'unzipN')))] 
-[for ( ca : ConstructorArgument | lp.constructorArguments)]
-[if (ca.name = '_func')] 
-#include "[ca.value.substring(1,ca.value.lastIndex('_')-1)/].hpp"
+		  (lp.processConstructor.name = 'unzipN') or (lp.processConstructor.name = 'delayn') or (lp.name.endsWith('unzip')) or ((lp.name.lastIndexOf('_')) = 0) ))] 
+[if (lp.constructorArguments->select(ca | ca.name = '_func')->first().value.lastIndex('oneOutput') = -1)]
+void [lp.name/]_func(vector<array<int,1>>& out1[for(p : InputPort | lp.ports -> filter(InputPort))],const vector<[p.dataType/]>& inp[lp.ports -> filter(InputPort)->indexOf(p)/][/for])
+{
+	for (int i ; i < [lp.name.substring(lp.name.lastIndexOf('__') + 2)/] ; i++ )
+	{ 
+		int j ; 
+		j = i % 3 ; 
+		j = j*2 ; 
+		out1['['/]0[']'/] = {inp1['['/]0[']'/]['['/]0[']'/] + j} ;
+	}
+}
+
+[/if] 
 [/if]
 [/for]
+
+[comment Including the functionality of leaf processes which Do need changing to one output form if has a function argument /]
+
+[for (cp : CompositeProcess | pn.processes -> filter(CompositeProcess))]
+[for (lp : LeafProcess | cp.component.processes->filter(LeafProcess)->flatten())]
+[if (not ((lp.processConstructor.name = 'sender') or (lp.processConstructor.name = 'receiver') or 
+		  (lp.processConstructor.name = 'unzipN') or (lp.processConstructor.name = 'delayn') or (lp.name.endsWith('unzip')) or ((lp.name.lastIndexOf('_')) = 0) ))] 
+[if (not (lp.constructorArguments->select(ca | ca.name = '_func')->first().value.lastIndex('oneOutput') = -1))]
+typedef tuple<vector<[cp.ports -> filter(OutputPort)->first().dataType/]>[for( p : OutputPort | cp.ports -> filter(OutputPort)->excluding(cp.ports -> filter(OutputPort)->first()))],vector<[p.dataType/]>[/for]> tupint[cp.ports -> filter(OutputPort)->size().toString()/]_[pn.processes->indexOf(cp)/];
+
+void [lp.name/]_func(vector<tupint[cp.ports -> filter(OutputPort)->size().toString()/]_[pn.processes->indexOf(cp)/]>& out1[for(p : InputPort | lp.ports -> filter(InputPort))],const vector<[p.dataType/]>& inp[lp.ports -> filter(InputPort)->indexOf(p)/][/for])
+{
+[for( op : OutputPort | cp.ports -> filter(OutputPort))]
+vector<[op.dataType/]> ret[cp.ports -> filter(OutputPort)->indexOf(op)-1/](1) ;
+[/for]
+for (int i ; i < [lp.name.substring(lp.name.lastIndexOf('__') + 2)/] ; i++ )
+	{
+		int j ; 
+		j = i % 3 ; 
+		j = j*2 ; 
+		[for( op : OutputPort | cp.ports -> filter(OutputPort))]
+		ret[cp.ports -> filter(OutputPort)->indexOf(op)-1/]['['/]0[']'/] = {j} ; 
+		[/for]
+	}
+out1['['/]0[']'/] = make_tuple(ret0[for(op : OutputPort | cp.ports -> filter(OutputPort)->excluding(cp.ports->filter(OutputPort)->first()))],ret[cp.ports -> filter(OutputPort)->indexOf(op)-1/][/for]);
+}
 [/if] 
+[/if]
+[/for]
 [/for]
 
-using namespace std ; 
+
+
+
+
 using namespace ForSyDe ; 
 
 
@@ -44,6 +82,9 @@ SC_MODULE([pn.name/])
 [comment Instantiating signals /]
 [for (sig : Signal | pn.signals)]
     ForSyDe::[sig.moc.toString()/]::signal<[sig.dataType.toString()/]> [sig.name/];
+[if ((sig.name.endsWith('fromReceiver')) or (sig.name.endsWith('toSender')))]
+		ForSyDe::SY::signal<[sig.dataType.toString()/]> [sig.name/]SY;
+[/if]
 [/for]
     SC_CTOR([pn.name/])
     {
@@ -53,7 +94,7 @@ SC_MODULE([pn.name/])
 		auto [lp.name/] = ForSyDe::[lp.processConstructor.moc.toString()/]::make_[lp.processConstructor.name/](
  		"[lp.name/]"
 [for (ca : ConstructorArgument | lp.constructorArguments)]
- 		,[printConstructorArgument(ca)/]
+ 		,[if (not (ca.value = '-1'))][printConstructorArgument(ca)/][/if]
 [/for]
 [if (not lp.ports->filter(OutputPort)->isEmpty())]
 [for (oport : OutputPort | lp.ports->filter(OutputPort)) ]
@@ -77,33 +118,35 @@ SC_MODULE([pn.name/])
 [comment Instantiating leaf processes which are  sender /]
 [for (lp : LeafProcess | pn.processes->filter(LeafProcess))]
 [if (lp.processConstructor.name = 'sender')]
-		auto [lp.name/] = ForSyDe::[lp.processConstructor.moc.toString()/]::make_[lp.processConstructor.name/](
+		auto [lp.name/] = ForSyDe::SY::make_[lp.processConstructor.name/](
  		"[lp.name/]"
 [for (ca : ConstructorArgument | lp.constructorArguments)]
  		,[printConstructorArgument(ca)/]
 [/for]
 [if (not lp.ports->filter(InputPort)->isEmpty())]
 [for (iport : InputPort | lp.ports->filter(InputPort)) ]
- 		,[printBinding(iport.getBindings()->first())/]
+ 		,[printBinding(iport.getBindings()->first())/]SY
 [/for]
 [/if]
    		 );
+		auto [lp.name/]_mis = ForSyDe::make_SDF2SY ("[lp.name/]_mis", [printBinding(lp.ports->filter(InputPort)->first().getBindings()->first())/]SY ,[printBinding(lp.ports->filter(InputPort)->first().getBindings()->first())/]); 
 [/if]
 [/for]
 [comment Instantiating leaf processes which are receiver /]
 [for (lp : LeafProcess | pn.processes->filter(LeafProcess))]
 [if (lp.processConstructor.name = 'receiver')]
-		auto [lp.name/] = ForSyDe::[lp.processConstructor.moc.toString()/]::make_[lp.processConstructor.name/](
+		auto [lp.name/] = ForSyDe::SY::make_[lp.processConstructor.name/](
  		"[lp.name/]"
 [for (ca : ConstructorArgument | lp.constructorArguments)]
  		,[printConstructorArgument(ca)/]
 [/for]
 [if (not lp.ports->filter(OutputPort)->isEmpty())]
 [for (oport : OutputPort | lp.ports->filter(OutputPort)) ]
- 		,[printBinding(oport.getBindings()->first())/]
+ 		,[printBinding(oport.getBindings()->first())/]SY
 [/for]
 [/if]
     	);
+		auto [lp.name/]_mis = ForSyDe::make_SY2SDF ("[lp.name/]_mis", [printBinding(lp.ports->filter(OutputPort)->first().getBindings()->first())/] ,[printBinding(lp.ports->filter(OutputPort)->first().getBindings()->first())/]SY); 
 [/if]
 [/for]
 [comment Instantiating composite processes /]
@@ -165,7 +208,7 @@ SC_MODULE([cp.name/])
     ForSyDe::[sig.moc.toString()/]::signal<[sig.dataType.toString()/]> [sig.name/];
 [/if]
 [if ( (sig.dataType = 'tuple<vector<int>...>'))]
-    ForSyDe::[sig.moc.toString()/]::signal<tuple<vector<int>[for (op : OutputPort | cp.ports->filter(OutputPort)->excluding(cp.ports->filter(OutputPort)->first()))],vector<int>[/for]>> [sig.name/];
+    ForSyDe::[sig.moc.toString()/]::signal<tuple<vector<[cp.ports->filter(OutputPort)->first().dataType/]>[for (op : OutputPort | cp.ports->filter(OutputPort)->excluding(cp.ports->filter(OutputPort)->first()))],vector<[op.dataType/]>[/for]>> [sig.name/];
 [/if]
 [/for]
     SC_CTOR([cp.name/])
@@ -200,7 +243,7 @@ SC_MODULE([cp.name/])
 [for (lp : LeafProcess | pn.processes->filter(LeafProcess))]
 [if (lp.processConstructor.name = 'unzipN')]
 		std::vector<uint> otoks[lp.name/] = {[lp.constructorArguments->select(ca | ca.name.endsWith('toks'))->first().value/][for (ca :ConstructorArgument |lp.constructorArguments->select(ca | ca.name.endsWith('toks'))->excluding(lp.constructorArguments->select(ca | ca.name.endsWith('toks'))->first()))],[ca.value/][/for]};
-		auto [lp.name/]_1 = new ForSyDe::[lp.processConstructor.moc.toString()/]::[lp.processConstructor.name/]<int[for (ip :OutputPort |lp.ports->filter(OutputPort)->excluding(lp.ports->filter(OutputPort)->first()))],int[/for]>(
+		auto [lp.name/]_1 = new ForSyDe::[lp.processConstructor.moc.toString()/]::[lp.processConstructor.name/]<[lp.ports->filter(OutputPort)->first().dataType/][for (ip :OutputPort |lp.ports->filter(OutputPort)->excluding(lp.ports->filter(OutputPort)->first()))],[ip.dataType/][/for]>(
  		"[lp.name/]_1",otoks[lp.name/]);
 [for (iport : InputPort | lp.ports -> filter (InputPort))]
 		[lp.name/]_1 -> iport1([printBinding(iport.getBindings()->first())/]);

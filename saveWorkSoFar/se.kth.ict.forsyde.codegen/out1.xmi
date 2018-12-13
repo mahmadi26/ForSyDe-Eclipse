@@ -1,31 +1,115 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <se.kth.ict.forsyde.core:System xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:se.kth.ict.forsyde.core="http://forsyde.ict.kth.se/core/forsyde">
   <processNetworks name="top__1">
-    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="constant1">
-      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="oport1" dataType="int"/>
-      <processConstructor name="sconstant" moc="SY"/>
-      <constructorArguments name="init_val" value="3"/>
-      <constructorArguments name="take" value="10"/>
+    <processes xsi:type="se.kth.ict.forsyde.core:CompositeProcess" name="a0">
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p0" moc="SDF" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p1" moc="SDF" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p2" moc="SDF" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p3" moc="SDF" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p4" moc="SDF" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p5" moc="SDF" dataType="int"/>
+      <component href="new-model#/1"/>
     </processes>
-    <processes xsi:type="se.kth.ict.forsyde.core:CompositeProcess" name="mulacc1">
-      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="port_0" dataType="int"/>
-      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="port_1" dataType="int"/>
-      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="port_2" dataType="int"/>
+    <processes xsi:type="se.kth.ict.forsyde.core:CompositeProcess" name="a2">
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p0" moc="SDF" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="p1" moc="SDF" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p2" moc="SDF" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="p3" moc="SDF" dataType="int"/>
+      <component href="new-model#/2"/>
     </processes>
-    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="fifo_2_mulacc1_prime_">
-      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="senderInPort_mulacc1_prime" dataType="int"/>
-      <processConstructor name="sender" moc="SY"/>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="delaych3">
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="delaych3_out" moc="SDF" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="delaych3_in" moc="SDF" dataType="int"/>
+      <processConstructor name="delayn" moc="SDF"/>
+      <constructorArguments name="init_val" value="0"/>
+      <constructorArguments name="n" value="1"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="delaych5">
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="delaych5_out" moc="SDF" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="delaych5_in" moc="SDF" dataType="int"/>
+      <processConstructor name="delayn" moc="SDF"/>
+      <constructorArguments name="init_val" value="0"/>
+      <constructorArguments name="n" value="4"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="delaych9">
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="delaych9_out" moc="SDF" dataType="int"/>
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="delaych9_in" moc="SDF" dataType="int"/>
+      <processConstructor name="delayn" moc="SDF"/>
+      <constructorArguments name="init_val" value="0"/>
+      <constructorArguments name="n" value="2"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="ch0_beforeD_a0_prime_">
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="senderInPort_a0_prime" moc="SDF" dataType="int"/>
+      <processConstructor name="sender" moc="SDF"/>
       <constructorArguments name="rank" value="0"/>
-      <constructorArguments name="id" value="3"/>
+      <constructorArguments name="id" value="1"/>
     </processes>
-    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="fifo_1_mulacc1_prime_">
-      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="receiverOutPort_mulacc1_prime" dataType="int"/>
-      <processConstructor name="receiver" moc="SY"/>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="ch1_a2_prime_">
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="senderInPort_a2_prime" moc="SDF" dataType="int"/>
+      <processConstructor name="sender" moc="SDF"/>
       <constructorArguments name="rank" value="0"/>
       <constructorArguments name="id" value="2"/>
     </processes>
-    <signals name="fifo_0" moc="SY" dataType="int" sourceProcess="//@processNetworks.0/@processes.0" sourcePort="//@processNetworks.0/@processes.0/@ports.0" targetProcess="//@processNetworks.0/@processes.1" targetPort="//@processNetworks.0/@processes.1/@ports.0"/>
-    <signals name="fifo_1_created" moc="SY" dataType="int" sourceProcess="//@processNetworks.0/@processes.3" sourcePort="//@processNetworks.0/@processes.3/@ports.0" targetProcess="//@processNetworks.0/@processes.1" targetPort="//@processNetworks.0/@processes.1/@ports.1"/>
-    <signals name="fifo_2_created" moc="SY" dataType="int" sourceProcess="//@processNetworks.0/@processes.1" sourcePort="//@processNetworks.0/@processes.1/@ports.2" targetProcess="//@processNetworks.0/@processes.2" targetPort="//@processNetworks.0/@processes.2/@ports.0"/>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="ch3_afterD_delaych3_prime_">
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="senderInPort_delaych3_prime" moc="SDF" dataType="int"/>
+      <processConstructor name="sender" moc="SDF"/>
+      <constructorArguments name="rank" value="0"/>
+      <constructorArguments name="id" value="13"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="ch9_afterD_delaych9_prime_">
+      <ports xsi:type="se.kth.ict.forsyde.core:InputPort" name="senderInPort_delaych9_prime" moc="SDF" dataType="int"/>
+      <processConstructor name="sender" moc="SDF"/>
+      <constructorArguments name="rank" value="0"/>
+      <constructorArguments name="id" value="17"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="ch2_a0_prime_">
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="receiverOutPort_a0_prime" moc="SDF" dataType="int"/>
+      <processConstructor name="receiver" moc="SDF"/>
+      <constructorArguments name="rank" value="0"/>
+      <constructorArguments name="id" value="3"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="ch3_beforeD_delaych3_prime_">
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="receiverOutPort_delaych3_prime" moc="SDF" dataType="int"/>
+      <processConstructor name="receiver" moc="SDF"/>
+      <constructorArguments name="rank" value="0"/>
+      <constructorArguments name="id" value="4"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="ch6_a0_prime_">
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="receiverOutPort_a0_prime" moc="SDF" dataType="int"/>
+      <processConstructor name="receiver" moc="SDF"/>
+      <constructorArguments name="rank" value="0"/>
+      <constructorArguments name="id" value="7"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="ch7_a2_prime_">
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="receiverOutPort_a2_prime" moc="SDF" dataType="int"/>
+      <processConstructor name="receiver" moc="SDF"/>
+      <constructorArguments name="rank" value="0"/>
+      <constructorArguments name="id" value="8"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="ch8_afterD_a2_prime_">
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="receiverOutPort_a2_prime" moc="SDF" dataType="int"/>
+      <processConstructor name="receiver" moc="SDF"/>
+      <constructorArguments name="rank" value="0"/>
+      <constructorArguments name="id" value="16"/>
+    </processes>
+    <processes xsi:type="se.kth.ict.forsyde.core:LeafProcess" name="ch10_afterD_a0_prime_">
+      <ports xsi:type="se.kth.ict.forsyde.core:OutputPort" name="receiverOutPort_a0_prime" moc="SDF" dataType="int"/>
+      <processConstructor name="receiver" moc="SDF"/>
+      <constructorArguments name="rank" value="0"/>
+      <constructorArguments name="id" value="18"/>
+    </processes>
+    <signals name="ch5_beforeD" moc="SDF" dataType="int" sourceProcess="//@processNetworks.0/@processes.0" sourcePort="//@processNetworks.0/@processes.0/@ports.4" targetProcess="//@processNetworks.0/@processes.3" targetPort="//@processNetworks.0/@processes.3/@ports.1"/>
+    <signals name="ch9_beforeD" moc="SDF" dataType="int" sourceProcess="//@processNetworks.0/@processes.1" sourcePort="//@processNetworks.0/@processes.1/@ports.3" targetProcess="//@processNetworks.0/@processes.4" targetPort="//@processNetworks.0/@processes.4/@ports.1"/>
+    <signals name="ch5_afterD" moc="SDF" dataType="int" sourceProcess="//@processNetworks.0/@processes.3" sourcePort="//@processNetworks.0/@processes.3/@ports.0" targetProcess="//@processNetworks.0/@processes.0" targetPort="//@processNetworks.0/@processes.0/@ports.1"/>
+    <signals name="ch0_beforeD_created" moc="SDF" dataType="int" sourceProcess="//@processNetworks.0/@processes.0" sourcePort="//@processNetworks.0/@processes.0/@ports.5" targetProcess="//@processNetworks.0/@processes.5" targetPort="//@processNetworks.0/@processes.5/@ports.0"/>
+    <signals name="ch1_created" moc="SDF" dataType="int" sourceProcess="//@processNetworks.0/@processes.1" sourcePort="//@processNetworks.0/@processes.1/@ports.2" targetProcess="//@processNetworks.0/@processes.6" targetPort="//@processNetworks.0/@processes.6/@ports.0"/>
+    <signals name="ch2_created" moc="SDF" dataType="int" sourceProcess="//@processNetworks.0/@processes.9" sourcePort="//@processNetworks.0/@processes.9/@ports.0" targetProcess="//@processNetworks.0/@processes.0" targetPort="//@processNetworks.0/@processes.0/@ports.2"/>
+    <signals name="ch3_beforeD_created" moc="SDF" dataType="int" sourceProcess="//@processNetworks.0/@processes.10" sourcePort="//@processNetworks.0/@processes.10/@ports.0" targetProcess="//@processNetworks.0/@processes.2" targetPort="//@processNetworks.0/@processes.2/@ports.1"/>
+    <signals name="ch6_created" moc="SDF" dataType="int" sourceProcess="//@processNetworks.0/@processes.11" sourcePort="//@processNetworks.0/@processes.11/@ports.0" targetProcess="//@processNetworks.0/@processes.0" targetPort="//@processNetworks.0/@processes.0/@ports.3"/>
+    <signals name="ch7_created" moc="SDF" dataType="int" sourceProcess="//@processNetworks.0/@processes.12" sourcePort="//@processNetworks.0/@processes.12/@ports.0" targetProcess="//@processNetworks.0/@processes.1" targetPort="//@processNetworks.0/@processes.1/@ports.1"/>
+    <signals name="ch3_afterD_created" moc="SDF" dataType="int" sourceProcess="//@processNetworks.0/@processes.2" sourcePort="//@processNetworks.0/@processes.2/@ports.0" targetProcess="//@processNetworks.0/@processes.7" targetPort="//@processNetworks.0/@processes.7/@ports.0"/>
+    <signals name="ch8_afterD_created" moc="SDF" dataType="int" sourceProcess="//@processNetworks.0/@processes.13" sourcePort="//@processNetworks.0/@processes.13/@ports.0" targetProcess="//@processNetworks.0/@processes.1" targetPort="//@processNetworks.0/@processes.1/@ports.0"/>
+    <signals name="ch9_afterD_created" moc="SDF" dataType="int" sourceProcess="//@processNetworks.0/@processes.4" sourcePort="//@processNetworks.0/@processes.4/@ports.0" targetProcess="//@processNetworks.0/@processes.8" targetPort="//@processNetworks.0/@processes.8/@ports.0"/>
+    <signals name="ch10_afterD_created" moc="SDF" dataType="int" sourceProcess="//@processNetworks.0/@processes.14" sourcePort="//@processNetworks.0/@processes.14/@ports.0" targetProcess="//@processNetworks.0/@processes.0" targetPort="//@processNetworks.0/@processes.0/@ports.0"/>
   </processNetworks>
 </se.kth.ict.forsyde.core:System>

@@ -4,14 +4,14 @@
     <input>
       <takesTypesFrom href="http://forsyde.ict.kth.se/core/forsyde#/"/>
     </input>
-    <imports href="platform:/resource/se.kth.ict.forsyde.codegen/bin/files/mainGen.emtl#/0"/>
+    <imports href="../../../../../../files/mainGen.emtl#/0"/>
     <imports href="../../../../../../files/pnGen.emtl#/0"/>
     <ownedModuleElement xsi:type="mtl:Template" name="fsdsyscgenSystem" visibility="Public" main="true">
       <body xsi:type="ocl.ecore:StringLiteralExp" stringSymbol="&#x9;&#xA;"/>
       <body xsi:type="ocl.ecore:StringLiteralExp" stringSymbol="&#x9;"/>
       <body xsi:type="mtl:TemplateInvocation">
         <eType xsi:type="ocl.ecore:PrimitiveType" href="http://www.eclipse.org/ocl/1.1.0/oclstdlib.ecore#/0/String"/>
-        <definition href="platform:/resource/se.kth.ict.forsyde.codegen/bin/files/mainGen.emtl#/0/generateMain"/>
+        <definition href="../../../../../../files/mainGen.emtl#/0/generateMain"/>
         <argument xsi:type="ocl.ecore:VariableExp" name="aSystem" referredVariable="/0/fsdsyscgenSystem/aSystem">
           <eType xsi:type="ecore:EClass" href="http://forsyde.ict.kth.se/core/forsyde#//System"/>
         </argument>
@@ -72,7 +72,7 @@
           <contents xsi:type="ocl.ecore:Constraint"/>
         </eAnnotations>
         <eAnnotations source="MTL">
-          <references href="platform:/resource/se.kth.ict.forsyde.codegen/bin/files/mainGen.emtl#/0/generateMain"/>
+          <references href="../../../../../../files/mainGen.emtl#/0/generateMain"/>
         </eAnnotations>
         <eType xsi:type="ocl.ecore:PrimitiveType" href="http://www.eclipse.org/ocl/1.1.0/oclstdlib.ecore#/0/String"/>
         <eParameters name="aSystem">

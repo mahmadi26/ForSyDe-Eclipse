@@ -61,10 +61,12 @@ rule actorToLeafProcess {
 	}
 	to 
 		outPr : forsyde!LeafProcess (
-			name <- actor.attribute('name').value 
+			name <- actor.attribute('name').value  + '__' + actor.parent.parent.children -> select (e | e.name = 'sdfProperties')->first().children
+					 ->select (e | e.name = 'actorProperties') -> select (ap | ap.attribute('actor').value = actor.attribute('name').value)
+					 ->first().children->select (e | e.name = 'processor')->first().children -> select (e | e.name = 'executionTime') -> first().attribute('time').value
 			,ports <- actor.children -> select (e | e.name = 'port') 				
 			,processConstructor <- thisModule.processConstructor('comb'+ inports.size().toString())
-			,constructorArguments <- Sequence {thisModule.constructorArgument('_func',actor.attribute('name').value.concat('_vector_func')),thisModule.constructorArgument('o1toks',oport.attribute('rate').value.toString())
+			,constructorArguments <- Sequence {thisModule.constructorArgument('_func',outPr.name + '_func'),thisModule.constructorArgument('o1toks',if (oport = OclUndefined) then '-1' else  oport.attribute('rate').value.toString() endif )
 												,inports -> collect (a |
 													thisModule.constructorArgument('i'.concat(inports->indexOf(a).toString()).concat('toks'),a.attribute('rate').value.toString()))
 												}->flatten()
@@ -72,8 +74,8 @@ rule actorToLeafProcess {
 		)
 	
 }
-
-
+ 
+ 
 rule actorToCompositeProcess {
 	from 
 		actor : XML!Element ( 
@@ -81,7 +83,7 @@ rule actorToCompositeProcess {
 		 then 
 		 	if ((actor.children -> flatten() -> select (e | e.name = 'port') -> select (p | p.attribute('type').value = 'out').size()) >1 )
 			then true 
-			else false 
+			else false   
 			endif 
 		else false 
 		endif
@@ -89,6 +91,7 @@ rule actorToCompositeProcess {
 	using {
 		-- following causes problem in actors with no input port
 		inports : Sequence(XML!Element) = actor.children -> flatten() -> select (e | e.name = 'port') -> select (p | p.attribute('type').value = 'in');	
+	    
 		oports : XML!Element = actor.children -> flatten() -> select (e | e.name = 'port') -> select (p | p.attribute('type').value = 'out');			
 
 	}
@@ -102,10 +105,12 @@ rule actorToCompositeProcess {
 			,signals <- outSig	
 	   )
 	   ,outLeaf : forsyde!LeafProcess (
-	   	name <- actor.attribute('name').value +'_oneOutput'
+	   		name <- actor.attribute('name').value +'_oneOutput'+ '__' + actor.parent.parent.children -> select (e | e.name = 'sdfProperties')->first().children
+					->select (e | e.name = 'actorProperties') -> select (ap | ap.attribute('actor').value = actor.attribute('name').value)
+					->first().children->select (e | e.name = 'processor')->first().children -> select (e | e.name = 'executionTime') -> first().attribute('time').value
 			,ports <- Sequence {outP , inports -> collect (ip | thisModule.resolveTemp(ip,'leafInP'))} 				
 			,processConstructor <- thisModule.processConstructor('comb'+ inports.size().toString())
-			,constructorArguments <- Sequence {thisModule.constructorArgument('_func',actor.attribute('name').value.concat('_tuple_vector_func'))
+			,constructorArguments <- Sequence {thisModule.constructorArgument('_func',outLeaf.name+'_func')
 													,thisModule.constructorArgument('o1toks','1')
 													,inports -> collect (a |
 													thisModule.constructorArgument('i'.concat(inports->indexOf(a).toString()).concat('toks'),a.attribute('rate').value.toString()))
@@ -211,7 +216,7 @@ rule channelToSignalInitials {
 			name <- 'delay' + ch.attribute('name').value 
 			,ports <- Sequence {delayOutP,delayInP}  				
 			,processConstructor <- thisModule.processConstructor('delayn')
-			,constructorArguments <- Sequence {thisModule.constructorArgument('init_val','0')
+			,constructorArguments <- Sequence {thisModule.constructorArgument('init_val','{0}')
 											   ,
 											   thisModule.constructorArgument('n',ch.attribute('initialTokens').value.toString())
 											   }
@@ -244,12 +249,12 @@ rule portsToInPorts {
 		outP : forsyde!InputPort (
 			name <-  p.attribute('name').value 
 			,moc <- 'SDF'
-			,dataType <- 'int'	
+			,dataType <- 'array<int,' + p.parent.parent.parent.children -> select (e | e.name = 'sdfProperties')->first().children -> select (e | e.name = 'channelProperties')->select (e | (e.attribute('channel').value) = (p.parent.parent.children->select(ch | ch.name = 'channel')->select(ch | ch.attribute('dstPort').value = p.attribute('name').value)->first().attribute('name').value))->first().children -> select (e | e.name = 'tokenSize') -> first().attribute('sz').value.toString() + '>'	
 		)
 		,leafInP : forsyde!InputPort (
 			name <-  p.attribute('name').value + '_leaf' 
 			,moc <- 'SDF'
-			,dataType <- 'int'
+			,dataType <- 'array<int,' + p.parent.parent.parent.children -> select (e | e.name = 'sdfProperties')->first().children -> select (e | e.name = 'channelProperties')->select (e | (e.attribute('channel').value) = (p.parent.parent.children->select(ch | ch.name = 'channel')->select(ch | ch.attribute('dstPort').value = p.attribute('name').value)->first().attribute('name').value))->first().children -> select (e | e.name = 'tokenSize') -> first().attribute('sz').value.toString() + '>'
 			,boundPort <- outP
 			,boundProcess <- p.parent
 		)
@@ -269,12 +274,12 @@ rule portsToOutPorts {
 		outP : forsyde!OutputPort (
 			name <-  p.attribute('name').value 
 			,moc <- 'SDF'
-			,dataType <- 'int'	
+			,dataType <- 'array<int,' + p.parent.parent.parent.children -> select (e | e.name = 'sdfProperties')->first().children -> select (e | e.name = 'channelProperties')->select (e | (e.attribute('channel').value) = (p.parent.parent.children->select(ch | ch.name = 'channel')->select(ch | ch.attribute('srcPort').value = p.attribute('name').value)->first().attribute('name').value))->first().children -> select (e | e.name = 'tokenSize') -> first().attribute('sz').value.toString() + '>'	
 		)
 		,unzipOutP : forsyde!OutputPort (
 			name <-  p.attribute('name').value + '_unzip' 
 			,moc <- 'SDF'
-			,dataType <- 'int'
+			,dataType <- 'array<int,' + p.parent.parent.parent.children -> select (e | e.name = 'sdfProperties')->first().children -> select (e | e.name = 'channelProperties')->select (e | (e.attribute('channel').value) = (p.parent.parent.children->select(ch | ch.name = 'channel')->select(ch | ch.attribute('srcPort').value = p.attribute('name').value)->first().attribute('name').value))->first().children -> select (e | e.name = 'tokenSize') -> first().attribute('sz').value.toString() + '>'
 			,boundPort <- outP
 			,boundProcess <- p.parent
 		)
@@ -324,10 +329,12 @@ helper def : trim(s : String) : String =
 	endif 
 	
 ;
-
+ 
 helper context XML!Element def : attribute(attName: String) : XML!Attribute = 
 	self.children->select(a | a.name=attName)->first()
 ;
+
+
 helper def : findProc(ss : XML!Element, lookupProcess : String) : XML!Element = 
 	ss.parent.children->select(e | e.oclIsTypeOf(XML!Element))
 		->select(p | p.attribute('name').value = ss.attribute(lookupProcess).value)->first()
