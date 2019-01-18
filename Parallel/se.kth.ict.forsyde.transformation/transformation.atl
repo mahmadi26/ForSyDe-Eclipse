@@ -1,0 +1,707 @@
+-- @nsURI forsyde=http://forsyde.ict.kth.se/core/forsyde
+-- @nsURI XML=http://www.eclipse.org/MoDisco/Xml/0.1.incubation/XML
+ 
+module transformation;
+create    OUT1:forsyde  
+	   	, OUT2:forsyde  
+--		, OUT3:forsyde 
+--		, OUT4:forsyde  
+--		, OUT5:forsyde  
+--		, OUT6:forsyde  
+--		, OUT7:forsyde  
+--		, OUT8:forsyde  
+--		, OUT9:forsyde  
+--		, OUT10:forsyde  
+--		, OUT11:forsyde  
+--		, OUT12:forsyde  
+--		, OUT13:forsyde  
+--		, OUT14:forsyde  
+--		, OUT15:forsyde  
+--		, OUT16:forsyde  
+		from
+		IN1: XML , 
+		IN2: forsyde ; 
+
+--A system in each output
+
+
+
+rule systemToSystem {
+	from 
+		inSys : forsyde!System 
+		,inxml : XML!Root
+	to 
+		outSys1 : forsyde!System in OUT1 (
+			processNetworks <- thisModule.PNtoPN(inSys.processNetworks->first(),1,inxml)
+				)
+	    ,outSys2 : forsyde!System in OUT2 (
+			processNetworks <- thisModule.PNtoPN(inSys.processNetworks->first(),2,inxml)
+				)
+}
+
+
+rule compositeProcessToPN1 {
+	from 
+		inCP : forsyde!CompositeProcess 
+		,inxml : XML!Root 
+		(
+			inxml.equalAtts('process', inCP.name)->first().attribute('prcessor').value = '1'	
+		)
+	to 
+		outCP : forsyde!ProcessNetwork in OUT1 (
+			name <- inCP.component.name 
+			,processes <- inCP.component.processes -> collect (pr | if pr.oclIsTypeOf(forsyde!LeafProcess) 
+										 				  then thisModule.copyLeafProcess(pr)
+														  else thisModule.copyCompositeProcess(pr)
+														  endif									 
+										 			)
+--			,ports <- 
+	--		,signals <- 
+		)
+}
+
+-- instantiate and bind the features of the main processnetwork in each output
+
+lazy rule PNtoPN {
+	from 
+		inPN : forsyde!ProcessNetwork
+		,id : Integer
+		,inxml : XML!Root
+	to
+		outPN : forsyde!ProcessNetwork (
+			name <- inPN.name + '__' + id
+			
+			-- the processes in each output are either leaf or composite processes from the original processnetwork
+			-- which should be assigned to the dedicated output or sender and receiver processes which should appear
+			-- for each signal which its source and target processes should not be in the same output
+			
+			-- find the processes which should be placed in each output
+		 	
+			,processes <- inPN.processes -> select ( )
+										 
+										 -- copy leaf and composite processes
+									
+										 -> collect (pr | if pr.oclIsTypeOf(forsyde!LeafProcess) 
+										 				  then thisModule.copyLeafProcess(pr)
+														  else thisModule.copyCompositeProcess(pr)
+														  endif									 
+										 			)
+													
+													
+										 -- finding out whether or not there should be sender processes and
+										 -- then instantiating them.
+										 -- cut of a signals results in a sender process in the output the signals
+										 -- source process should reside.
+													
+										 -> union(thisModule.senderProcesses(inPN.signals,inxml,id)
+										 			-> collect (pr | thisModule.copySenderProcess(pr,id,inPN) )
+										 	)
+											
+										 -- finding out whether or not there should be receiver processes and
+										 -- then instantiating them.	
+										 -- cut of a signals results in a receiver process in the output
+										 -- the signals target process should reside.
+											
+										 -> union(thisModule.receiverProcesses(inPN.signals,inxml,id)
+										 			-> collect (pr | thisModule.copyReceiverProcess(pr,id,inPN) )
+										 	)
+			
+			-- copying ports that belong to each sub simulation. first selecting the ports and then copying them based 
+			-- on whether they are input or output ports
+			
+			,ports <- inPN.getRemainedPorts(inPN.processes,id,inxml)
+				->collect(p | if p.oclIsTypeOf(forsyde!InputPort) 
+							  then thisModule.copyInputPort(p,p.getBoundProcess(outPN.processes)
+							  	   ,p.getBoundPort(outPN.processes)
+								   )
+							  else thisModule.copyOutputPort(p,p.getBoundProcess(outPN.processes)
+							  	   ,p.getBoundPort(outPN.processes)
+								   ) 
+							  endif
+						  )
+			
+						  
+			-- there are two type of signals in each output. The signals which were between two processes 
+			-- which both are part of the said output and signals which are created between a process and 
+			-- the sender/receiver processes to send data to / receive data from.
+						  
+			,signals <- inPN.signals -> select(s | thisModule.remainedSignals(s, inxml,id))
+								        ->collect (s | thisModule.copySignal(s,thisModule.getSPr(s,outPN.processes)
+										        							  ,thisModule.getTPr(s,outPN.processes)
+																		      ,thisModule.getSP(s,outPN.processes)
+																		      ,thisModule.getTP(s,outPN.processes)
+																		    )
+											      )
+												  
+									-- finding the signals which cutting them results in creating sender / receiver 
+									-- processes and then instantiating the proper signals
+												  
+									 -> union (thisModule.createdSignals(inPN.signals,inxml,id)
+									 	->collect (s | thisModule.copyCreatedSignal (s,thisModule.getSPrCreated(s,outPN.processes,inxml,id)
+										        							  ,thisModule.getTPrCreated(s,outPN.processes,inxml,id)
+																		      ,thisModule.getSPCreated(s,outPN.processes,inxml,id)
+																		      ,thisModule.getTPCreated(s,outPN.processes,inxml,id)
+																		    )
+									 		
+									 		      ) 
+											  )
+		)
+		
+}
+
+-- instantiate leaf processes and bind their features
+
+lazy rule copyLeafProcess {
+	from 
+		inPr : forsyde!LeafProcess 
+	to 
+		outPr : forsyde!LeafProcess (
+			name <- inPr.name 
+			,ports <- inPr.ports -> collect (p | if p.oclIsTypeOf(forsyde!InputPort)
+												 then thisModule.copyInputPort(p,OclUndefined,OclUndefined)
+												 else thisModule.copyOutputPort(p,OclUndefined,OclUndefined)
+												 endif
+											)
+			,processConstructor <- thisModule.copyProcessConstructor(inPr.processConstructor)
+			,constructorArguments <- inPr.constructorArguments->collect(ca | thisModule.copyConstructorArgument(ca))
+		)
+}
+
+-- instantiate composite processes and bind their features
+
+
+lazy rule copyCompositeProcess {
+	from 
+		inCP : forsyde!CompositeProcess 
+	to 
+		outCP : forsyde!CompositeProcess (
+			name <- inCP.name 
+			,ports <- inCP.ports -> collect (p | if p.oclIsTypeOf(forsyde!InputPort)
+												 then thisModule.copyInputPort(p,OclUndefined,OclUndefined)
+												 else thisModule.copyOutputPort(p,OclUndefined,OclUndefined)
+												 endif
+											)
+											
+			-- each composite process has one component which is a processnetwork
+											
+			,component <- thisModule.copyComponent
+		)
+}
+
+-- copying a component is similar to copying a processnetwork since a component is a reference to a processnetwork 
+
+lazy rule copyComponent {
+	from 
+		inC : forsyde!ProcessNetwork 
+	to 
+		outC : forsyde!ProcessNetwork (
+			name <- inC.name
+			,processes <- inC.processes -> collect (pr | if pr.oclIsTypeOf(forsyde!LeafProcess) 
+										 				  then thisModule.copyLeafProcess(pr)
+														  
+														  -- a composite process might have some composite processes itself
+														  
+														  else thisModule.copyCompositeProcess(pr)
+														  endif									 
+										 			)
+			,ports <- inC.ports ->collect(p | if p.oclIsTypeOf(forsyde!InputPort) 
+							  				  then thisModule.copyInputPort(p,p.getBoundProcess(inC.processes)
+							  	   					,p.getBoundPort(inC.processes) )
+							  				  else thisModule.copyOutputPort(p,p.getBoundProcess(inC.processes)
+							  	   					,p.getBoundPort(inC.processes) ) 
+							  				  endif
+						  				 )
+			
+			-- first find out sourceProcess, targetProcess, sourcePort and target port for the signal and then 
+			-- pass them to copySignal rule to instantiate the signal
+										 
+			,signals <- inC.signals -> collect (s | thisModule.copySignal(s,thisModule.getSPr(s,outC.processes)
+																		,thisModule.getTPr(s,outC.processes)
+																		,thisModule.getSP(s,outC.processes)
+																		,thisModule.getTP(s,outC.processes)
+																		 )
+											   )
+		)
+
+
+}
+
+-- instantiating sender processes form signals which cause them 
+
+lazy rule copySenderProcess {
+	from 
+		inS : forsyde!Signal 
+		,id : Integer
+		,inPN : forsyde!ProcessNetwork
+	to 
+		outPr : forsyde!LeafProcess ( 
+			name <- inS.name + '_' +inS.sourceProcess.name + '_' + 'prime_'			
+			
+			-- sender processes have one output port
+			
+			,ports <- Sequence {thisModule.copyInSRPort(inS)}			
+			,processConstructor <- thisModule.senderProcessConstructor (inS)
+			
+			-- sender processes' process constructor has two arguments 
+			-- a rank argument which represents rank of the process it should communicate with which is 
+			-- the rank of MPI_RECEIVE operation it sends data to
+			-- an id argument which represents id of the process it should communicate with which is 
+			-- the id of MPI_RECEIVE operation it sends data to
+			
+			,constructorArguments <- Sequence {thisModule.rankArgument(id) , thisModule.idArgument(inS,inPN)}
+		)
+}
+
+-- instantiating receiver processes form signals which cause them 
+
+lazy rule copyReceiverProcess {
+	from 
+		inS : forsyde!Signal
+		,id : Integer
+		,inPN : forsyde!ProcessNetwork
+	to 
+		outPr : forsyde!LeafProcess ( 
+			name <- inS.name + '_' +inS.targetProcess.name + '_' +  'prime_'			
+			
+			-- reciever processes have one output port
+			
+			,ports <- Sequence {thisModule.copyOutSRPort(inS)}
+			,processConstructor <- thisModule.receiverProcessConstructor (inS)
+			
+			-- receiver processes' process constructor has two arguments 
+			-- a rank argument which represents rank of the process it should communicate with which is 
+			-- the rank of MPI_RECEIVE operation it receives data from
+			-- an id argument which represents id of the process it should communicate with which is 
+			-- the id of MPI_RECEIVE operation it receives data from
+			
+			,constructorArguments <- Sequence {thisModule.rankArgument(id) , thisModule.idArgument(inS,inPN)}
+		)
+}
+
+-- instantiating input port of sender processes
+
+lazy rule copyInSRPort {
+	from 
+		inS : forsyde!Signal 
+	to 
+		outP : forsyde!InputPort (
+			name <- 'senderInPort_' + inS.sourceProcess.name + '_' + 'prime'  	
+			,moc <- inS.sourcePort.moc
+			,dataType <- inS.sourcePort.dataType
+		)
+}
+
+-- instantiating input port of receiver processes
+
+lazy rule copyOutSRPort {
+	from 
+		inS : forsyde!Signal 
+	to 
+		outP : forsyde!OutputPort (
+			name <- 'receiverOutPort_' + inS.targetProcess.name + '_' + 'prime'  	
+			,moc <- inS.targetPort.moc
+			,dataType <- inS.targetPort.dataType
+		)
+}
+
+-- instantiating process constructor for a leaf process
+
+lazy rule copyProcessConstructor {
+	from
+		inPC : forsyde!ProcessConstructor
+	to 
+		outPC : forsyde!ProcessConstructor (
+			name <- inPC.name,
+			moc <- inPC.moc
+		)
+}
+
+-- instantiating process argument for a leaf process
+
+lazy rule copyConstructorArgument{
+	from
+		inCa : forsyde!ConstructorArgument
+	to 
+		outCa : forsyde!ConstructorArgument (
+			name <- inCa.name
+			,type <- inCa.type 
+			,value <- inCa.value
+		)
+
+}
+
+-- instantiating input port 
+-- the bound process and bound port should be figured out before this rule and should be passed to it
+
+lazy rule copyInputPort {
+	from 
+		inP : forsyde!InputPort
+		,boundPr : forsyde!Process 
+		,boundP : forsyde!Port
+	to 
+		outP : forsyde!InputPort (
+			name <- inP.name 
+			,moc <- inP.moc
+			,dataType <- inP.dataType 
+			,boundProcess <- boundPr
+			,boundPort <- boundP
+		)
+}
+
+-- instantiating output port 
+-- the bound process and bound port should be figured out before this rule and should be passed to it
+
+lazy rule copyOutputPort {
+	from 
+		inP : forsyde!OutputPort
+		,boundPr : forsyde!Process 
+		,boundP : forsyde!Port
+	to 
+		outP : forsyde!OutputPort (
+			name <- inP.name 
+			,moc <- inP.moc
+			,dataType <- inP.dataType 
+			,boundProcess <- boundPr
+			,boundPort <- boundP
+		)
+}
+
+-- sender processes have a process constructor with the name 'sender'
+
+lazy rule senderProcessConstructor {
+	from 
+		inS : forsyde!Signal
+	to 
+		outPC : forsyde!ProcessConstructor (
+			name <- 'sender'
+			
+			-- moc of the port sender process receives data from
+			
+			,moc <- inS.moc
+		)
+}
+
+-- receiver processes have a process constructor with the name 'receiver'
+
+lazy rule receiverProcessConstructor {
+	from 
+		inS : forsyde!Signal
+	to 
+		outPC : forsyde!ProcessConstructor (
+			name <- 'receiver'
+			
+			-- moc of the port receiver process sends data to
+			
+			,moc <- inS.moc
+		)
+}
+
+-- the rank argument for the sender and receiver processes 
+-- it's the rank which is passed to MPI_RECEIVE and MPI_SEND operations. 
+-- there is a unique rank for each program so we assign a rank to each output
+
+lazy rule rankArgument {
+	from 
+		id : Integer 
+	to 
+		outCA : forsyde!ConstructorArgument (
+			name <- 'rank'
+			,value <- (id - 1).toString() 
+		)
+}
+
+-- a sender and a reciever in two different outputs which are appeared because of 
+-- the cut of the same signal should have similar ids to communicate with each other. 
+-- we assign an id to each signal and if it is ought to be omitted the sender and receiver
+-- processes get the signals id and hence their ids are the same.
+
+lazy rule idArgument {
+	from 
+		inS : forsyde!Signal
+		,inPN : forsyde!ProcessNetwork
+	to 
+		outCA : forsyde!ConstructorArgument (
+		name <- 'id'
+		,value <- thisModule.idArg(inS,inPN.signals)
+		)
+}
+
+
+-- instantiating signal 
+-- the sourceProcess, targetProcess, sourcePort and targetPort should be figured out before this rule and should be passed to it
+
+lazy rule copySignal {
+	from 
+		inS : forsyde!Signal 
+		,inSPr : forsyde!Process 
+		,inTPr : forsyde!Process 
+		,inSP : forsyde!Port
+		,inTP : forsyde!Port
+	to 
+		outS : forsyde!Signal (
+		name <- inS.name 
+		,moc <- inS.moc 
+		,dataType <- inS.dataType 
+		,sourceProcess <- inSPr 
+		,targetProcess <- inTPr 
+		,sourcePort <- inSP 
+		,targetPort <- inTP
+		) 
+}
+
+-- instantiating created signal 
+-- the sourceProcess, targetProcess, sourcePort and targetPort should be figured out before this rule and should be passed to it
+
+lazy rule copyCreatedSignal {
+	from 
+		inS : forsyde!Signal 
+		,inSPr : forsyde!Process 
+		,inTPr : forsyde!Process 
+		,inSP : forsyde!Port
+		,inTP : forsyde!Port
+	to 
+		outS : forsyde!Signal (
+		name <- inS.name + '_created'
+		,moc <- inS.moc 
+		,dataType <- inS.dataType 
+		,sourceProcess <- inSPr 
+		,targetProcess <- inTPr 
+		,sourcePort <- inSP 
+		,targetPort <- inTP
+		) 
+}
+
+
+-- helpers
+
+
+ 
+
+
+-- find the the signals which cause the need for creating new signals 
+-- these are the signals which should be omitted
+
+helper def : createdSignals (inSs : Sequence(forsyde!Signal), inxml : XML!Root, id : Integer) : Sequence(forsyde!Signal) = 
+	inSs -> select(s | (inxml.equalAtts('process',s.sourceProcess.name)->first().attribute('processor').value.toInteger() = id)
+					   or (inxml.equalAtts('process',s.targetProcess.name)->first().attribute('processor').value.toInteger() = id)
+				  )
+		  -> select (s | not ((inxml.equalAtts('process',s.sourceProcess.name)->first().attribute('processor').value) = 
+		  				      (inxml.equalAtts('process',s.targetProcess.name)->first().attribute('processor').value)
+							 )
+		  			)
+;
+
+
+--getting the source process for the created signals 
+
+helper def : getSPrCreated(inS :forsyde!Signal, inPrs : Sequence(forsyde!Process),inxml : XML!Root, id : Integer) 
+ : forsyde!Process = 
+	if 
+		((inxml.equalAtts('process', inS.sourceProcess.name)->first().attribute('processor').value.toInteger()) = id )
+	then 
+		inPrs -> select(pr | pr.name = inS.sourceProcess.name) -> first()
+	else 
+		inPrs -> select (pr |if pr.oclIsTypeOf(forsyde!LeafProcess) 
+							then if pr.processConstructor.name = 'receiver'
+								 then true 
+								 else false 
+								 endif
+							else false 
+							endif        ) -> select (pr | pr.name.startsWith(inS.name)) ->first()
+	endif
+;
+
+--getting the target process for the created signals 
+
+helper def : getTPrCreated(inS :forsyde!Signal, inPrs : Sequence(forsyde!Process),inxml : XML!Root, id : Integer) 
+ : forsyde!Process = 
+	if 
+		(inxml.equalAtts('process', inS.targetProcess.name)->first().attribute('processor').value.toInteger() = id )
+	then 
+		inPrs -> select(pr | pr.name = inS.targetProcess.name) -> first()
+	else 
+		inPrs -> select (pr |if pr.oclIsTypeOf(forsyde!LeafProcess) 
+							then if pr.processConstructor.name = 'sender'
+								 then true 
+								 else false 
+								 endif
+							else false 
+							endif        )-> select (pr | pr.name.startsWith(inS.name)) ->first()
+	endif
+;
+
+--getting the source port for the created signals 
+
+helper def : getSPCreated(inS :forsyde!Signal, inPrs : Sequence(forsyde!Process),inxml : XML!Root, id : Integer) 
+ : forsyde!Port = 
+	if 
+		(inxml.equalAtts('process', inS.sourceProcess.name)->first().attribute('processor').value.toInteger() = id )
+	then 
+		inPrs -> select(pr | pr.name = inS.sourceProcess.name) -> collect (pr | pr.ports) -> flatten()
+				-> select (p | inS.sourcePort.name = p.name) -> first()							
+	else 
+		inPrs -> select (pr |if pr.oclIsTypeOf(forsyde!LeafProcess) 
+							then if pr.processConstructor.name = 'receiver'
+								 then true 
+								 else false 
+								 endif
+							else false 
+							endif        )-> select (pr | pr.name.startsWith(inS.name)) -> collect (pr | pr.ports) 
+				 ->flatten() -> first()
+	endif
+;
+
+--getting the target port for the created signals 
+
+helper def : getTPCreated(inS :forsyde!Signal, inPrs : Sequence(forsyde!Process),inxml : XML!Root, id : Integer) 
+ : forsyde!Port = 
+	if 
+		(inxml.equalAtts('process', inS.targetProcess.name)->first().attribute('processor').value.toInteger() = id )
+	then 
+		inPrs -> select(pr | pr.name = inS.targetProcess.name) -> collect (pr | pr.ports) -> flatten()
+				-> select (p | inS.targetPort.name = p.name) ->first()							
+	else 
+		inPrs -> select  (pr |if pr.oclIsTypeOf(forsyde!LeafProcess) 
+							  then if pr.processConstructor.name = 'sender'
+								 then true 
+								 else false 
+								 endif
+							  else false 
+							  endif        )-> select (pr | pr.name.startsWith(inS.name)) -> collect (pr | pr.ports) 
+				 ->flatten() -> first()
+	endif
+;
+
+-- if the source and target processes of a signal belong to the same output file, then 
+-- the signal should remain and later on instantiated
+
+
+helper def : remainedSignals(inS : forsyde!Signal, inxml : XML!Root, id : Integer) : Boolean = 
+	if ( (inxml.equalAtts('process',inS.sourceProcess.name)->first().attribute('processor').value) = 
+		 (inxml.equalAtts('process',inS.targetProcess.name)->first().attribute('processor').value)
+		)
+	then 
+		if  (inxml.equalAtts('process',inS.sourceProcess.name)->first().attribute('processor').value.toInteger() = id)
+		then 
+			true 
+		else 
+			false 
+		endif
+	else 
+		false 
+	endif
+;
+
+-- return the process which its name equals to the signals sourceProcess name
+-- in this point the processes are already instantiated so we can find the process 
+-- we want by searching its name in the sequence of processes
+
+helper def : getSPr(inS :forsyde!Signal, inPrs : Sequence(forsyde!Process)) : forsyde!Process = 
+	inPrs -> select (Pr | inS.sourceProcess.name = Pr.name ) -> first()
+;
+
+-- return the process which its name equals to the signals targetProcess name
+-- in this point the processes are already instantiated so we can find the process 
+-- we want by searching its name in the sequence of processes
+
+helper def : getTPr(inS :forsyde!Signal, inPrs : Sequence(forsyde!Process)) : forsyde!Process = 
+	inPrs -> select (Pr | inS.targetProcess.name = Pr.name ) -> first()
+;
+
+-- return the port which its name equals to the signals sourcePort name
+-- in this point the processes are already instantiated so we can find the process 
+-- we want by searching its name in the sequence of processes
+
+helper def : getSP(inS :forsyde!Signal, inPrs : Sequence(forsyde!Process)) : forsyde!Port = 
+	inPrs -> select (Pr | inS.sourceProcess.name = Pr.name ) -> first().ports
+				->select (P | P.name = inS.sourcePort.name) -> first()
+;
+
+
+-- return the port which its name equals to the signals targetPort name
+-- in this point the processes are already instantiated so we can find the process 
+-- we want by searching its name in the sequence of processes
+
+helper def : getTP(inS :forsyde!Signal, inPrs : Sequence(forsyde!Process)) : forsyde!Port = 
+	inPrs -> select (Pr | inS.targetProcess.name = Pr.name ) -> first().ports
+				->select (P | P.name = inS.targetPort.name) -> first()
+;
+
+
+-- id of a signal which is assigned to sender and receiver processes caused by its deletion 
+-- is the index of that signal in the sequence of all signals of process network
+
+helper def : idArg (inS : forsyde!Signal , inSignals : Sequence(forsyde!Signal)) : String = 
+	inSignals -> indexOf(inS).toString() 
+;
+
+-- finding sender processes / returns a sequence of signals form which we could instantiate the sender processes
+
+helper def : senderProcesses (inS : Sequence(forsyde!Signal), inxml : XML!Root, id : Integer) 
+: Sequence(forsyde!Signal) = 
+	
+	-- select signals which their source and target processes should not be in the same output
+	
+	inS -> select (s | not (((inxml.equalAtts('process',s.sourceProcess.name)->first()).attribute('processor').value) 
+					   = ((inxml.equalAtts('process',s.targetProcess.name)->first()).attribute('processor').value)))
+	
+		-- among those signals select ones which their source process should be in the output we are considering now
+					   
+		->select (s | ((inxml.equalAtts('process',s.sourceProcess.name)->first()).attribute('processor').value) = id.toString())
+; 
+
+-- finding receiver processes / returns a sequence of signals form which we could instantiate the receiver processes
+
+helper def : receiverProcesses (inS : Sequence(forsyde!Signal), inxml : XML!Root, id : Integer) 
+: Sequence(forsyde!Signal) = 
+	
+	-- select signals which their source and target processes should not be in the same output
+	
+	inS -> select (s | not (((inxml.equalAtts('process',s.sourceProcess.name)->first()).attribute('processor').value) 
+					   = ((inxml.equalAtts('process',s.targetProcess.name)->first()).attribute('processor').value)))
+	
+		-- among those signals select ones which their target process should be in the output we are considering now
+					   
+		->select (s | ((inxml.equalAtts('process',s.targetProcess.name)->first()).attribute('processor').value) = id.toString())
+;
+
+-- get the bound process and bound port for the desired port
+
+helper context forsyde!Port def : getBoundProcess (procs : Sequence(forsyde!Process)) : forsyde!Process = 
+	procs -> select(p | p.name = self.boundProcess.name)->first() 
+;
+helper context forsyde!Port def : getBoundPort (procs : Sequence(forsyde!Process)) : forsyde!Port = 
+	(procs -> select(p | p.name = self.boundProcess.name)->first()).ports->select(port | self.boundPort.name = port.name)->first() 
+;
+
+-- get the ports which remain in each sub simulation
+
+helper context forsyde!ProcessNetwork def : getRemainedPorts (processes : Sequence(forsyde!Proc), id : Integer,inxml : XML!Root) 
+	: Sequence(forsyde!Port) =
+	self.ports -> select (p | inxml.equalAtts('processor' , id.toString()) = p.boundProcess)									  	
+;
+
+-- get the sequence of elements which their specified attribute equals the specified value 
+
+helper context XML!Root def : equalAtts(att : String,  val:String) : Sequence (XML!Element) = 
+	if (att = 'process')	
+	then
+		self.children->select(x | x.name ='Element')
+					 ->select(y | y.attribute('process').value = val)
+	else 
+		if (att='processor')
+		then 
+			self.children->select(x | x.name ='Element')
+					     ->select(y | y.attribute('processor').value = val)
+		else 
+			OclUndefined
+		endif		
+	endif
+
+;
+
+--get the value of specified attribute
+
+helper context XML!Element def : attribute(attName: String) : XML!Attribute = 
+	self.children->select(a | a.name=attName)->first()
+;
