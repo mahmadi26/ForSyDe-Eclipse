@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:forsyde="http://www.example.org/forsyde">
+  <forsyde:System>
+    <processNetworks name="top">
+      <processes xsi:type="forsyde:LeafProcess" name="a6">
+        <ports xsi:type="forsyde:InputPort" name="p0" moc="SDF" dataType="array&lt;int,2>"/>
+        <ports xsi:type="forsyde:OutputPort" name="p3" moc="SDF" dataType="array&lt;int,2>"/>
+        <processConstructor name="comb" moc="SDF"/>
+        <constructorArguments name="_func" value="a6_func"/>
+        <constructorArguments name="o1toks" value="1"/>
+        <constructorArguments name="i1toks" value="3"/>
+      </processes>
+      <processes xsi:type="forsyde:CompositeProcess" name="a1" component="/1">
+        <ports xsi:type="forsyde:InputPort" name="p0" moc="SDF" dataType="array&lt;int,1>"/>
+        <ports xsi:type="forsyde:OutputPort" name="p1" moc="SDF" dataType="array&lt;int,3>"/>
+        <ports xsi:type="forsyde:OutputPort" name="p2" moc="SDF" dataType="array&lt;int,1>"/>
+      </processes>
+      <processes xsi:type="forsyde:CompositeProcess" name="a4" component="/2">
+        <ports xsi:type="forsyde:InputPort" name="p0" moc="SDF" dataType="array&lt;int,1>"/>
+        <ports xsi:type="forsyde:InputPort" name="p1" moc="SDF" dataType="array&lt;int,1>"/>
+        <ports xsi:type="forsyde:OutputPort" name="p2" moc="SDF" dataType="array&lt;int,2>"/>
+        <ports xsi:type="forsyde:OutputPort" name="p3" moc="SDF" dataType="array&lt;int,2>"/>
+      </processes>
+      <processes xsi:type="forsyde:CompositeProcess" name="a7" component="/3">
+        <ports xsi:type="forsyde:InputPort" name="p0" moc="SDF" dataType="array&lt;int,2>"/>
+        <ports xsi:type="forsyde:OutputPort" name="p1" moc="SDF" dataType="array&lt;int,2>"/>
+      </processes>
+      <processes xsi:type="forsyde:LeafProcess" name="ch0_receiver">
+        <ports xsi:type="forsyde:OutputPort" name="ch0_receiverPort" moc="SDF" dataType="array&lt;int,1>"/>
+        <processConstructor name="receiver" moc="SDF"/>
+        <constructorArguments name="rank" value="0"/>
+        <constructorArguments name="id" value="1"/>
+      </processes>
+      <processes xsi:type="forsyde:LeafProcess" name="ch9_receiver">
+        <ports xsi:type="forsyde:OutputPort" name="ch9_receiverPort" moc="SDF" dataType="array&lt;int,1>"/>
+        <processConstructor name="receiver" moc="SDF"/>
+        <constructorArguments name="rank" value="0"/>
+        <constructorArguments name="id" value="10"/>
+      </processes>
+      <processes xsi:type="forsyde:LeafProcess" name="ch1_sender">
+        <ports xsi:type="forsyde:InputPort" name="ch1_senderPort" moc="SDF" dataType="array&lt;int,3>"/>
+        <processConstructor name="sender" moc="SDF"/>
+        <constructorArguments name="rank" value="0"/>
+        <constructorArguments name="id" value="2"/>
+      </processes>
+      <processes xsi:type="forsyde:LeafProcess" name="ch5_sender">
+        <ports xsi:type="forsyde:InputPort" name="ch5_senderPort" moc="SDF" dataType="array&lt;int,2>"/>
+        <processConstructor name="sender" moc="SDF"/>
+        <constructorArguments name="rank" value="0"/>
+        <constructorArguments name="id" value="6"/>
+      </processes>
+      <processes xsi:type="forsyde:LeafProcess" name="ch8_sender">
+        <ports xsi:type="forsyde:InputPort" name="ch8_senderPort" moc="SDF" dataType="array&lt;int,2>"/>
+        <processConstructor name="sender" moc="SDF"/>
+        <constructorArguments name="rank" value="0"/>
+        <constructorArguments name="id" value="9"/>
+      </processes>
+      <signals name="ch3" moc="SDF" dataType="array&lt;int,1>" sourceProcess="/0/@processNetworks.0/@processes.1" sourcePort="/0/@processNetworks.0/@processes.1/@ports.2" targetProcess="/0/@processNetworks.0/@processes.2" targetPort="/0/@processNetworks.0/@processes.2/@ports.1"/>
+      <signals name="ch6" moc="SDF" dataType="array&lt;int,2>" sourceProcess="/0/@processNetworks.0/@processes.2" sourcePort="/0/@processNetworks.0/@processes.2/@ports.2" targetProcess="/0/@processNetworks.0/@processes.3" targetPort="/0/@processNetworks.0/@processes.3/@ports.0"/>
+      <signals name="ch10" moc="SDF" dataType="array&lt;int,2>" sourceProcess="/0/@processNetworks.0/@processes.3" sourcePort="/0/@processNetworks.0/@processes.3/@ports.1" targetProcess="/0/@processNetworks.0/@processes.0" targetPort="/0/@processNetworks.0/@processes.0/@ports.0"/>
+      <signals name="ch0_fromReceiver" moc="SDF" dataType="array&lt;int,1>" sourceProcess="/0/@processNetworks.0/@processes.4" sourcePort="/0/@processNetworks.0/@processes.4/@ports.0" targetProcess="/0/@processNetworks.0/@processes.1" targetPort="/0/@processNetworks.0/@processes.1/@ports.0"/>
+      <signals name="ch9_fromReceiver" moc="SDF" dataType="array&lt;int,1>" sourceProcess="/0/@processNetworks.0/@processes.5" sourcePort="/0/@processNetworks.0/@processes.5/@ports.0" targetProcess="/0/@processNetworks.0/@processes.2" targetPort="/0/@processNetworks.0/@processes.2/@ports.0"/>
+      <signals name="ch1_toSender" moc="SDF" dataType="array&lt;int,3>" sourceProcess="/0/@processNetworks.0/@processes.1" sourcePort="/0/@processNetworks.0/@processes.1/@ports.1" targetProcess="/0/@processNetworks.0/@processes.6" targetPort="/0/@processNetworks.0/@processes.6/@ports.0"/>
+      <signals name="ch5_toSender" moc="SDF" dataType="array&lt;int,2>" sourceProcess="/0/@processNetworks.0/@processes.0" sourcePort="/0/@processNetworks.0/@processes.0/@ports.1" targetProcess="/0/@processNetworks.0/@processes.7" targetPort="/0/@processNetworks.0/@processes.7/@ports.0"/>
+      <signals name="ch8_toSender" moc="SDF" dataType="array&lt;int,2>" sourceProcess="/0/@processNetworks.0/@processes.2" sourcePort="/0/@processNetworks.0/@processes.2/@ports.3" targetProcess="/0/@processNetworks.0/@processes.8" targetPort="/0/@processNetworks.0/@processes.8/@ports.0"/>
+    </processNetworks>
+  </forsyde:System>
+  <forsyde:ProcessNetwork>
+    <processes xsi:type="forsyde:LeafProcess" name="a1_leaf">
+      <ports xsi:type="forsyde:InputPort" name="p0_zip" moc="SDF" dataType="array&lt;int,1>" boundProcess="/0/@processNetworks.0/@processes.1" boundPort="/0/@processNetworks.0/@processes.1/@ports.0"/>
+      <ports xsi:type="forsyde:OutputPort" name="leafOutP" moc="SDF" dataType="array&lt;int,3>"/>
+      <processConstructor name="comb" moc="SDF"/>
+      <constructorArguments name="_func" value="a1_leaf_func"/>
+      <constructorArguments name="o1toks" value="1"/>
+      <constructorArguments name="i1toks" value="1"/>
+    </processes>
+    <processes xsi:type="forsyde:LeafProcess" name="a1_unzip">
+      <ports xsi:type="forsyde:InputPort" name="unzipInP" moc="SDF" dataType="array&lt;int,3>"/>
+      <ports xsi:type="forsyde:OutputPort" name="unzipOutput_p1" moc="SDF" dataType="array&lt;int,3>"/>
+      <ports xsi:type="forsyde:OutputPort" name="unzipOutput_p2" moc="SDF" dataType="array&lt;int,1>"/>
+      <processConstructor name="unzipN" moc="SDF"/>
+      <constructorArguments name="_func" value="read_tuple"/>
+      <constructorArguments name="o1toks" value="2"/>
+      <constructorArguments name="o2toks" value="2"/>
+    </processes>
+    <processes xsi:type="forsyde:LeafProcess" name="a1_delay_p1">
+      <ports xsi:type="forsyde:InputPort" name="delayInP" moc="SDF" dataType="array&lt;int,3>"/>
+      <ports xsi:type="forsyde:OutputPort" name="delayOutP" moc="SDF" dataType="array&lt;int,3>" boundProcess="/0/@processNetworks.0/@processes.1" boundPort="/0/@processNetworks.0/@processes.1/@ports.1"/>
+      <processConstructor name="delayn" moc="SDF"/>
+      <constructorArguments name="init_val" value="0"/>
+      <constructorArguments name="n" value="28"/>
+    </processes>
+    <processes xsi:type="forsyde:LeafProcess" name="a1_delay_p2">
+      <ports xsi:type="forsyde:InputPort" name="delayInP" moc="SDF" dataType="array&lt;int,1>"/>
+      <ports xsi:type="forsyde:OutputPort" name="delayOutP" moc="SDF" dataType="array&lt;int,1>" boundProcess="/0/@processNetworks.0/@processes.1" boundPort="/0/@processNetworks.0/@processes.1/@ports.2"/>
+      <processConstructor name="delayn" moc="SDF"/>
+      <constructorArguments name="init_val" value="0"/>
+      <constructorArguments name="n" value="12"/>
+    </processes>
+    <signals name="a1_toUnzip" moc="SDF" dataType="array&lt;int,3>" sourceProcess="/1/@processes.0" sourcePort="/1/@processes.0/@ports.1" targetProcess="/1/@processes.1" targetPort="/1/@processes.1/@ports.0"/>
+    <signals name="a1_toDelay" moc="SDF" dataType="array&lt;int,3>" sourceProcess="/1/@processes.1" sourcePort="/1/@processes.1/@ports.1" targetProcess="/1/@processes.2" targetPort="/1/@processes.2/@ports.0"/>
+    <signals name="a1_toDelay" moc="SDF" dataType="array&lt;int,1>" sourceProcess="/1/@processes.1" sourcePort="/1/@processes.1/@ports.2" targetProcess="/1/@processes.3" targetPort="/1/@processes.3/@ports.0"/>
+  </forsyde:ProcessNetwork>
+  <forsyde:ProcessNetwork>
+    <processes xsi:type="forsyde:LeafProcess" name="a4_leaf">
+      <ports xsi:type="forsyde:InputPort" name="p0_zip" moc="SDF" dataType="array&lt;int,1>" boundProcess="/0/@processNetworks.0/@processes.2" boundPort="/0/@processNetworks.0/@processes.2/@ports.0"/>
+      <ports xsi:type="forsyde:InputPort" name="p1_zip" moc="SDF" dataType="array&lt;int,1>" boundProcess="/0/@processNetworks.0/@processes.2" boundPort="/0/@processNetworks.0/@processes.2/@ports.1"/>
+      <ports xsi:type="forsyde:OutputPort" name="leafOutP" moc="SDF" dataType="array&lt;int,2>"/>
+      <processConstructor name="comb2" moc="SDF"/>
+      <constructorArguments name="_func" value="a4_leaf_func"/>
+      <constructorArguments name="o1toks" value="1"/>
+      <constructorArguments name="i1toks" value="2"/>
+      <constructorArguments name="i2toks" value="2"/>
+    </processes>
+    <processes xsi:type="forsyde:LeafProcess" name="a4_unzip">
+      <ports xsi:type="forsyde:InputPort" name="unzipInP" moc="SDF" dataType="array&lt;int,2>"/>
+      <ports xsi:type="forsyde:OutputPort" name="unzipOutput_p2" moc="SDF" dataType="array&lt;int,2>"/>
+      <ports xsi:type="forsyde:OutputPort" name="unzipOutput_p3" moc="SDF" dataType="array&lt;int,2>"/>
+      <processConstructor name="unzipN" moc="SDF"/>
+      <constructorArguments name="_func" value="read_tuple"/>
+      <constructorArguments name="o1toks" value="3"/>
+      <constructorArguments name="o2toks" value="1"/>
+    </processes>
+    <processes xsi:type="forsyde:LeafProcess" name="a4_delay_p2">
+      <ports xsi:type="forsyde:InputPort" name="delayInP" moc="SDF" dataType="array&lt;int,2>"/>
+      <ports xsi:type="forsyde:OutputPort" name="delayOutP" moc="SDF" dataType="array&lt;int,2>" boundProcess="/0/@processNetworks.0/@processes.2" boundPort="/0/@processNetworks.0/@processes.2/@ports.2"/>
+      <processConstructor name="delayn" moc="SDF"/>
+      <constructorArguments name="init_val" value="0"/>
+      <constructorArguments name="n" value="3"/>
+    </processes>
+    <processes xsi:type="forsyde:LeafProcess" name="a4_delay_p3">
+      <ports xsi:type="forsyde:InputPort" name="delayInP" moc="SDF" dataType="array&lt;int,2>"/>
+      <ports xsi:type="forsyde:OutputPort" name="delayOutP" moc="SDF" dataType="array&lt;int,2>" boundProcess="/0/@processNetworks.0/@processes.2" boundPort="/0/@processNetworks.0/@processes.2/@ports.3"/>
+      <processConstructor name="delayn" moc="SDF"/>
+      <constructorArguments name="init_val" value="0"/>
+      <constructorArguments name="n" value="2"/>
+    </processes>
+    <signals name="a4_toUnzip" moc="SDF" dataType="array&lt;int,2>" sourceProcess="/2/@processes.0" sourcePort="/2/@processes.0/@ports.2" targetProcess="/2/@processes.1" targetPort="/2/@processes.1/@ports.0"/>
+    <signals name="a4_toDelay" moc="SDF" dataType="array&lt;int,2>" sourceProcess="/2/@processes.1" sourcePort="/2/@processes.1/@ports.1" targetProcess="/2/@processes.2" targetPort="/2/@processes.2/@ports.0"/>
+    <signals name="a4_toDelay" moc="SDF" dataType="array&lt;int,2>" sourceProcess="/2/@processes.1" sourcePort="/2/@processes.1/@ports.2" targetProcess="/2/@processes.3" targetPort="/2/@processes.3/@ports.0"/>
+  </forsyde:ProcessNetwork>
+  <forsyde:ProcessNetwork>
+    <processes xsi:type="forsyde:LeafProcess" name="a7_leaf">
+      <ports xsi:type="forsyde:InputPort" name="p0_zip" moc="SDF" dataType="array&lt;int,2>" boundProcess="/0/@processNetworks.0/@processes.3" boundPort="/0/@processNetworks.0/@processes.3/@ports.0"/>
+      <ports xsi:type="forsyde:OutputPort" name="leafOutP" moc="SDF" dataType="array&lt;int,2>"/>
+      <processConstructor name="comb" moc="SDF"/>
+      <constructorArguments name="_func" value="a7_func"/>
+      <constructorArguments name="o1toks" value="1"/>
+      <constructorArguments name="i1toks" value="3"/>
+    </processes>
+    <processes xsi:type="forsyde:LeafProcess" name="a7_delay">
+      <ports xsi:type="forsyde:InputPort" name="delayInP" moc="SDF" dataType="array&lt;int,2>"/>
+      <ports xsi:type="forsyde:OutputPort" name="delayOutP" moc="SDF" dataType="array&lt;int,2>" boundProcess="/0/@processNetworks.0/@processes.3" boundPort="/0/@processNetworks.0/@processes.3/@ports.1"/>
+      <processConstructor name="delayn" moc="SDF"/>
+      <constructorArguments name="init_val" value="0"/>
+      <constructorArguments name="n" value="1"/>
+    </processes>
+    <signals name="a7_toDelay" moc="SDF" dataType="array&lt;int,2>" sourceProcess="/3/@processes.0" sourcePort="/3/@processes.0/@ports.1" targetProcess="/3/@processes.1" targetPort="/3/@processes.1/@ports.0"/>
+  </forsyde:ProcessNetwork>
+</xmi:XMI>
