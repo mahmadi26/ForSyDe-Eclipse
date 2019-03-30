@@ -6,61 +6,6 @@
 #include <forsyde.hpp>
 #include <iostream>
 using namespace std ; 
-
-[comment Including the functionality of leaf processes which do not need changing to one output form if has a function argument /]
-[for (lp : LeafProcess | pn.processes -> filter(LeafProcess))]
-[if (not ((lp.processConstructor.name = 'sender') or (lp.processConstructor.name = 'receiver') or 
-		  (lp.processConstructor.name = 'unzipN') or (lp.processConstructor.name = 'delayn') or (lp.name.endsWith('unzip')) or ((lp.name.lastIndexOf('_')) = 0) ))] 
-[if (lp.constructorArguments->select(ca | ca.name = '_func')->first().value.lastIndex('oneOutput') = -1)]
-void [lp.name/]_func(vector<array<int,1>>& out1[for(p : InputPort | lp.ports -> filter(InputPort))],const vector<[p.dataType/]>& inp[lp.ports -> filter(InputPort)->indexOf(p)/][/for])
-{
-	for (int i ; i < [lp.name.substring(lp.name.lastIndexOf('__') + 2)/] ; i++ )
-	{ 
-		int j ; 
-		j = i % 3 ; 
-		j = j*2 ; 
-		out1['['/]0[']'/] = {inp1['['/]0[']'/]['['/]0[']'/] + j} ;
-	}
-}
-
-[/if] 
-[/if]
-[/for]
-
-[comment Including the functionality of leaf processes which Do need changing to one output form if has a function argument /]
-
-[for (cp : CompositeProcess | pn.processes -> filter(CompositeProcess))]
-[for (lp : LeafProcess | cp.component.processes->filter(LeafProcess)->flatten())]
-[if (not ((lp.processConstructor.name = 'sender') or (lp.processConstructor.name = 'receiver') or 
-		  (lp.processConstructor.name = 'unzipN') or (lp.processConstructor.name = 'delayn') or (lp.name.endsWith('unzip')) or ((lp.name.lastIndexOf('_')) = 0) ))] 
-[if (not (lp.constructorArguments->select(ca | ca.name = '_func')->first().value.lastIndex('oneOutput') = -1))]
-typedef tuple<vector<[cp.ports -> filter(OutputPort)->first().dataType/]>[for( p : OutputPort | cp.ports -> filter(OutputPort)->excluding(cp.ports -> filter(OutputPort)->first()))],vector<[p.dataType/]>[/for]> tupint[cp.ports -> filter(OutputPort)->size().toString()/]_[pn.processes->indexOf(cp)/];
-
-void [lp.name/]_func(vector<tupint[cp.ports -> filter(OutputPort)->size().toString()/]_[pn.processes->indexOf(cp)/]>& out1[for(p : InputPort | lp.ports -> filter(InputPort))],const vector<[p.dataType/]>& inp[lp.ports -> filter(InputPort)->indexOf(p)/][/for])
-{
-[for( op : OutputPort | cp.ports -> filter(OutputPort))]
-vector<[op.dataType/]> ret[cp.ports -> filter(OutputPort)->indexOf(op)-1/](1) ;
-[/for]
-for (int i ; i < [lp.name.substring(lp.name.lastIndexOf('__') + 2)/] ; i++ )
-	{
-		int j ; 
-		j = i % 3 ; 
-		j = j*2 ; 
-		[for( op : OutputPort | cp.ports -> filter(OutputPort))]
-		ret[cp.ports -> filter(OutputPort)->indexOf(op)-1/]['['/]0[']'/] = {j} ; 
-		[/for]
-	}
-out1['['/]0[']'/] = make_tuple(ret0[for(op : OutputPort | cp.ports -> filter(OutputPort)->excluding(cp.ports->filter(OutputPort)->first()))],ret[cp.ports -> filter(OutputPort)->indexOf(op)-1/][/for]);
-}
-[/if] 
-[/if]
-[/for]
-[/for]
-
-
-
-
-
 using namespace ForSyDe ; 
 
 
