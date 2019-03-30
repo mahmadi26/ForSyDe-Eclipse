@@ -14,21 +14,7 @@ Last, you need to have an implementation of MPI on your machine (openMPI, MPICH,
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
+We used [ATL]() for Model to Model transformation and [Acceleo]() for Model to Text transformation. We also used [Modisco]()'s XML metamodel therefore it should be installed on Eclipse too. ATL, Acceleo and Modisco can be installed by clicking on "Installing New Software" on "Help" tab in Eclipse. After installing these, you should open *transformation* and *codegenerator* projects from "Parallel" path. If you want to use sdf3 test cases, you should also open *sdf3ToForSyDe*  project.
 
 ## Running the tests
 
