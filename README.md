@@ -21,14 +21,14 @@ We used [ATL]() for Model to Model transformation and [Acceleo]() for Model to T
 The flow is designed such that a CSP will be solved which returns the optimum distribution of processes to processors. then a model to model transformation will return a ForSyDe model for each processing core containig processes which are meant to be processed on that specific core and modifications such as removig and adding signals and adding sender/receiver processes. Then, each of these models will be transformed into c++ source ready to be compiled by Acceleo code generator. 
 For test cases, starting from the output of sdf3, the following steps should be taken : 
 
-1- Providing the input of CSP problem 
-	- metisparser.py script for metis and pagrid*
-	- minizinkparser.py script for minizink* 
-2- Providing the inputs of transformation ( the transformation has 2 inputs : 1- the model of the original system 2- output of CSP ) and running the transformation
-	- first, we should add ForSyDe metamodel to EMF registry. this can happen by right-clicking(context menu) on forsyde.ecore file located in *plugins/se.kth.ict.forsyde* using ATL perspective in Eclipse 
-	- the second input of transformation has the simple format which can be seen in *Parallel/transformation/graphdist10.xml*. For large inputs the xmlparser.py* can be used to transform output of CSP to desired input of transformation.
-	- for each processor the transformation should be run giving the the processor id ( starting from 0)
-3- transforming each of  
+1. Providing the input of CSP problem 
+	* metisparser.py script for metis and pagrid*
+	* minizinkparser.py script for minizink* 
+1. Providing the inputs of transformation ( the transformation has 2 inputs : 1- the model of the original system 2- output of CSP ) and running the transformation
+	* first, we should add ForSyDe metamodel to EMF registry. this can happen by right-clicking(context menu) on forsyde.ecore file located in *plugins/se.kth.ict.forsyde* using ATL perspective in Eclipse 
+	* the second input of transformation has the simple format which can be seen in *Parallel/transformation/graphdist10.xml*. For large inputs the xmlparser.py* can be used to transform output of CSP to desired input of transformation.
+	* for each processor the transformation should be run giving the the processor id ( starting from 0)
+1. transforming each of the models to text using Acceleo by running the Sysgen.mtl module in Acceleo perspective 
 ## Remaining
 
 Add additional notes about how to deploy this on a live system
