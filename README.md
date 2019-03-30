@@ -27,10 +27,15 @@ For test cases, starting from the output of sdf3, the following steps should be 
 1. Providing the inputs of transformation ( the transformation has 2 inputs : 1- the model of the original system 2- output of CSP ) and running the transformation
 	* first, we should add ForSyDe metamodel to EMF registry. this can happen by right-clicking(context menu) on forsyde.ecore file located in *plugins/se.kth.ict.forsyde* using ATL perspective in Eclipse 
 	* the second input of transformation has the simple format which can be seen in *Parallel/transformation/graphdist10.xml*. For large inputs the xmlparser.py* can be used to transform output of CSP to desired input of transformation.
-	* for each processor the transformation should be run giving the the processor id ( starting from 0)
-1. transforming each of the models to text using Acceleo by running the Sysgen.mtl module in Acceleo perspective 
+	* for each processor the transformation should be run giving the the processor id in *Parallel/transformation/transformation.atl* ( starting from 0) 
+	* the transformation can be run by running transformation.atl in ATL perspective
+1. transforming each of the models to text using Acceleo by running the *Parallel/codegenerator/src/se/kth/ict/forsyde/codegen/main/Sysgen.mtl* module in Acceleo perspective 
+
+* run the scripts with *python* and not *python3* command
+
 ## Remaining
 
-Add additional notes about how to deploy this on a live system
+* automating transformation so that all transformations happen by running a java program 
+* a script for generating a random functionality for each process in test cases using sdf3
 
 
