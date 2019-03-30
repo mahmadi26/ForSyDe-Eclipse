@@ -1,6 +1,6 @@
 # Project Title
 
-This project's goal is to utilize eclipse's facilities for model-driven engineering for purpose of embedded and cyberphysical systems design in ForSyDe. For more information about ForSyDe visit [ForSyDe](https://forsyde.github.io/). A special use case is to use this facilities to implement the flow suggested in [An Automated Parallel Simulation Flowfor Heterogeneous Embedded Systems](An Automated Parallel Simulation Flowfor Heterogeneous Embedded Systems). Following you can find instructions on how to use the implementation of this flow. The path of this particular roject is the "Parallel" folder.
+This project's goal is to utilize eclipse's facilities for model-driven engineering for purpose of embedded and cyberphysical systems design in ForSyDe. For more information about ForSyDe visit [ForSyDe page](https://forsyde.github.io/). A special use case is to use this facilities to implement the flow suggested in [An Automated Parallel Simulation Flowfor Heterogeneous Embedded Systems](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=2ahUKEwiHv6Kw6anhAhUvwlkKHeWaCP0QFjAAegQIAhAB&url=https%3A%2F%2Fieeexplore.ieee.org%2Fdocument%2F6513466%2F&usg=AOvVaw0yxEJfLf9Yi1igUNDDELRv). Following you can find instructions on how to use the implementation of this flow. The path of this particular roject is the "Parallel" folder.
 
 ## Getting Started
 
