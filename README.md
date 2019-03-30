@@ -1,4 +1,4 @@
-# Project Title
+# ForSyde Eclipse
 
 This project's goal is to utilize Eclipse's facilities for model-driven engineering for purpose of embedded and cyberphysical systems design in ForSyDe. For more information about ForSyDe visit [ForSyDe page](https://forsyde.github.io/). A special use case is to use this facilities to implement the flow suggested in [An Automated Parallel Simulation Flowfor Heterogeneous Embedded Systems](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=2ahUKEwiHv6Kw6anhAhUvwlkKHeWaCP0QFjAAegQIAhAB&url=https%3A%2F%2Fieeexplore.ieee.org%2Fdocument%2F6513466%2F&usg=AOvVaw0yxEJfLf9Yi1igUNDDELRv). Following you can find instructions on how to use the implementation of this flow. The path of this particular project is the "Parallel" folder.
 
@@ -18,31 +18,19 @@ We used [ATL]() for Model to Model transformation and [Acceleo]() for Model to T
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+The flow is designed such that a CSP will be solved which returns the optimum distribution of processes to processors. then a model to model transformation will return a ForSyDe model for each processing core containig processes which are meant to be processed on that specific core and modifications such as removig and adding signals and adding sender/receiver processes. Then, each of these models will be transformed into c++ source ready to be compiled by Acceleo code generator. 
+For test cases, starting from the output of sdf3, the following steps should be taken : 
 
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
+1- Providing the input of CSP problem 
+	- metisparser.py script for metis and pagrid*
+	- minizinkparser.py script for minizink* 
+2- Providing the inputs of transformation ( the transformation has 2 inputs : 1- the model of the original system 2- output of CSP ) and running the transformation
+	- first, we should add ForSyDe metamodel to EMF registry. this can happen by right-clicking(context menu) on forsyde.ecore file located in *plugins/se.kth.ict.forsyde* using ATL perspective in Eclipse 
+	- the second input of transformation has the simple format which can be seen in *Parallel/transformation/graphdist10.xml*. For large inputs the xmlparser.py* can be used to transform output of CSP to desired input of transformation.
+	- for each processor the transformation should be run giving the the processor id ( starting from 0)
+3- transforming each of  
+## Remaining
 
 Add additional notes about how to deploy this on a live system
 
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
 
