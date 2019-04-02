@@ -1,11 +1,12 @@
 [comment encoding = UTF-8 /]
-[module pnGen('http://forsyde.ict.kth.se/core/forsyde')]
+[module pnGen('http://www.example.org/forsyde')]
 
 [template public generateProcessNetwork(pn : ProcessNetwork)]
 [file (pn.name.concat('.hpp'), false, 'UTF-8')]
 #include <forsyde.hpp>
 #include <iostream>
 using namespace std ; 
+const int iteration_size = 1000 ; 
 
 [comment Including the functionality of leaf processes which do not need changing to one output form if has a function argument /]
 [for (lp : LeafProcess | pn.processes -> filter(LeafProcess))]
@@ -14,12 +15,15 @@ using namespace std ;
 [if (lp.constructorArguments->select(ca | ca.name = '_func')->first().value.lastIndex('oneOutput') = -1)]
 void [lp.name/]_func(vector<array<int,1>>& out1[for(p : InputPort | lp.ports -> filter(InputPort))],const vector<[p.dataType/]>& inp[lp.ports -> filter(InputPort)->indexOf(p)/][/for])
 {
-	for (int i ; i < [lp.name.substring(lp.name.lastIndexOf('__') + 2)/] ; i++ )
-	{ 
-		int j ; 
-		j = i % 3 ; 
-		j = j*2 ; 
-		out1['['/]0[']'/] = {inp1['['/]0[']'/]['['/]0[']'/] + j} ;
+	for ( int j = 0 ; j< iteration_size ; j++ ) 
+	{
+		for (int i=0 ; i < 10 ; i++ )
+		{	 
+			int j ; 
+			j = i % 3 ; 
+			j = j*2 ; 
+			out1['['/]0[']'/] = {inp1['['/]0[']'/]['['/]0[']'/] + j} ;
+		}
 	}
 }
 
@@ -41,15 +45,18 @@ void [lp.name/]_func(vector<tupint[cp.ports -> filter(OutputPort)->size().toStri
 [for( op : OutputPort | cp.ports -> filter(OutputPort))]
 vector<[op.dataType/]> ret[cp.ports -> filter(OutputPort)->indexOf(op)-1/](1) ;
 [/for]
-for (int i ; i < [lp.name.substring(lp.name.lastIndexOf('__') + 2)/] ; i++ )
-	{
-		int j ; 
-		j = i % 3 ; 
-		j = j*2 ; 
-		[for( op : OutputPort | cp.ports -> filter(OutputPort))]
-		ret[cp.ports -> filter(OutputPort)->indexOf(op)-1/]['['/]0[']'/] = {j} ; 
-		[/for]
-	}
+for ( int j = 0 ; j < iteration_size ; j++ ) 
+{
+	for (int i=0 ; i < 10 ; i++ )
+		{
+			int j ; 
+			j = i % 3 ; 
+			j = j*2 ; 
+			[for( op : OutputPort | cp.ports -> filter(OutputPort))]
+			ret[cp.ports -> filter(OutputPort)->indexOf(op)-1/]['['/]0[']'/] = {j} ; 
+			[/for]
+		}
+}
 out1['['/]0[']'/] = make_tuple(ret0[for(op : OutputPort | cp.ports -> filter(OutputPort)->excluding(cp.ports->filter(OutputPort)->first()))],ret[cp.ports -> filter(OutputPort)->indexOf(op)-1/][/for]);
 }
 [/if] 

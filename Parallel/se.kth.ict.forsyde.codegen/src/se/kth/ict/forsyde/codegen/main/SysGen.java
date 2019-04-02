@@ -340,8 +340,8 @@ public class SysGen extends AbstractAcceleoGenerator {
     @Override
     public void registerPackages(ResourceSet resourceSet) {
         super.registerPackages(resourceSet);
-        if (!isInWorkspace(forsyde.ForsydePackage.class)) {
-            resourceSet.getPackageRegistry().put(forsyde.ForsydePackage.eINSTANCE.getNsURI(), forsyde.ForsydePackage.eINSTANCE);
+        if (!isInWorkspace(forsyde.ForSyDePackage.class)) {
+            resourceSet.getPackageRegistry().put(forsyde.ForSydePackage.eINSTANCE.getNsURI(), forsyde.ForsydePackage.eINSTANCE);
         }
         
         /*
