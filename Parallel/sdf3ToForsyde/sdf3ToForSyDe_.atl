@@ -12,11 +12,19 @@ rule applicationGraphToSystem {
 	to 
 		outSys : forsyde!System 
 		(
-			processNetworks <- inappGraph.children -> select ( e | e.name = 'sdf')	
+			processNetworks <- Sequence { inappGraph.children -> select ( e | e.name = 'sdf'), thisModule.case2->collect (c | thisModule.resolveTemp(c, 'PN'))	
+			                              , thisModule.case4->collect (c | thisModule.resolveTemp(c, 'PN'))
+			                              , thisModule.case5->collect (c | thisModule.resolveTemp(c, 'PN'))
+			                              , thisModule.case6->collect (c | thisModule.resolveTemp(c, 'PN'))
+			                              , thisModule.case8->collect (c | thisModule.resolveTemp(c, 'PN'))
+			                              , thisModule.case9->collect (c | thisModule.resolveTemp(c, 'PN'))
+			                              , thisModule.case10->collect (c | thisModule.resolveTemp(c, 'PN'))
+			}
+			
 		)
 }
 
--- Generating manin system process network from application graph child element 'sdf' 
+-- Generating main system process network from application graph child element 'sdf' 
 
 rule sdfToProcessNetwork { 
 	from 

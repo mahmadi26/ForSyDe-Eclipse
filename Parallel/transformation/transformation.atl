@@ -1,4 +1,3 @@
--- @atlcompiler emftvm
 module transformation;
 create OUT : forsyde  from IN1 : forsyde, IN2 : XML;
   
@@ -7,7 +6,10 @@ rule systemToSystem {
 		inSys : forsyde!System  
 	to 
 		outSys : forsyde!System  (
-			processNetworks <- outPN							  
+			processNetworks <- Sequence{outPN , inSys.processNetworks -> first().processes -> select ( cp | cp.oclIsTypeOf(forsyde!CompositeProcess))
+										        -> select (cp | thisModule.xml.equalAtts('process',cp.name)->first().attribute('processor').value = thisModule.output.toString())
+												-> collect ( cp | thisModule.resolveTemp(cp, 'outPN'))
+				                       }
 		) 
 		,outPN : forsyde!ProcessNetwork  (
 			name <- inSys.processNetworks->first().name 
