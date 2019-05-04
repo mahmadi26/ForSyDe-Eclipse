@@ -59,7 +59,7 @@
     <signals name="ch0_toSender" moc="SDF" dataType="array&lt;int,1>" sourceProcess="//@processNetworks.0/@processes.0" sourcePort="//@processNetworks.0/@processes.0/@ports.1" targetProcess="//@processNetworks.0/@processes.7" targetPort="//@processNetworks.0/@processes.7/@ports.0"/>
     <signals name="ch9_toSender" moc="SDF" dataType="array&lt;int,1>" sourceProcess="//@processNetworks.0/@processes.1" sourcePort="//@processNetworks.0/@processes.1/@ports.2" targetProcess="//@processNetworks.0/@processes.8" targetPort="//@processNetworks.0/@processes.8/@ports.0"/>
   </processNetworks>
-  <processNetworks>
+  <processNetworks name="a0">
     <processes xsi:type="forsyde:LeafProcess" name="a0_leaf">
       <ports xsi:type="forsyde:InputPort" name="p0_zip" moc="SDF" dataType="array&lt;int,2>" boundProcess="//@processNetworks.0/@processes.0" boundPort="//@processNetworks.0/@processes.0/@ports.0"/>
       <ports xsi:type="forsyde:OutputPort" name="leafOutP" moc="SDF" dataType="array&lt;int,1>"/>
@@ -77,7 +77,7 @@
     </processes>
     <signals name="a0_toDelay" moc="SDF" dataType="array&lt;int,1>" sourceProcess="//@processNetworks.1/@processes.0" sourcePort="//@processNetworks.1/@processes.0/@ports.1" targetProcess="//@processNetworks.1/@processes.1" targetPort="//@processNetworks.1/@processes.1/@ports.0"/>
   </processNetworks>
-  <processNetworks>
+  <processNetworks name="a2">
     <processes xsi:type="forsyde:LeafProcess" name="a2_leaf">
       <ports xsi:type="forsyde:InputPort" name="p0_zip" moc="SDF" dataType="array&lt;int,3>" boundProcess="//@processNetworks.0/@processes.1" boundPort="//@processNetworks.0/@processes.1/@ports.0"/>
       <ports xsi:type="forsyde:InputPort" name="p1_zip" moc="SDF" dataType="array&lt;int,3>" boundProcess="//@processNetworks.0/@processes.1" boundPort="//@processNetworks.0/@processes.1/@ports.1"/>
@@ -97,7 +97,7 @@
     </processes>
     <signals name="a2_toDelay" moc="SDF" dataType="array&lt;int,1>" sourceProcess="//@processNetworks.2/@processes.0" sourcePort="//@processNetworks.2/@processes.0/@ports.2" targetProcess="//@processNetworks.2/@processes.1" targetPort="//@processNetworks.2/@processes.1/@ports.0"/>
   </processNetworks>
-  <processNetworks>
+  <processNetworks name="a3">
     <processes xsi:type="forsyde:LeafProcess" name="a3_leaf">
       <ports xsi:type="forsyde:InputPort" name="p0_zip" moc="SDF" dataType="array&lt;int,2>" boundProcess="//@processNetworks.0/@processes.2" boundPort="//@processNetworks.0/@processes.2/@ports.0"/>
       <ports xsi:type="forsyde:OutputPort" name="leafOutP" moc="SDF" dataType="array&lt;int,2>"/>
@@ -115,7 +115,7 @@
     </processes>
     <signals name="a3_toDelay" moc="SDF" dataType="array&lt;int,2>" sourceProcess="//@processNetworks.3/@processes.0" sourcePort="//@processNetworks.3/@processes.0/@ports.1" targetProcess="//@processNetworks.3/@processes.1" targetPort="//@processNetworks.3/@processes.1/@ports.0"/>
   </processNetworks>
-  <processNetworks>
+  <processNetworks name="a5">
     <processes xsi:type="forsyde:LeafProcess" name="a5_leaf">
       <ports xsi:type="forsyde:InputPort" name="p0_zip" moc="SDF" dataType="array&lt;int,2>" boundProcess="//@processNetworks.0/@processes.3" boundPort="//@processNetworks.0/@processes.3/@ports.0"/>
       <ports xsi:type="forsyde:InputPort" name="p1_zip" moc="SDF" dataType="array&lt;int,2>" boundProcess="//@processNetworks.0/@processes.3" boundPort="//@processNetworks.0/@processes.3/@ports.1"/>

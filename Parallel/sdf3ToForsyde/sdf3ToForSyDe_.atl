@@ -96,7 +96,8 @@ rule case2_matching {
 			,component <- PN
 	   )
 	   ,PN : forsyde!ProcessNetwork (  
-			processes <- Sequence {leaf, zip} 							
+			name <- actor.attribute('name').value  
+			,processes <- Sequence {leaf, zip} 							
 			,signals <- signal	
 	   )
 	   ,leaf : forsyde!LeafProcess (
@@ -176,7 +177,8 @@ rule case4_matching {
 			 ,component <- PN
 	    )
 	    ,PN : forsyde!ProcessNetwork (  
-			 processes <- Sequence {leaf, delay} 							
+			 name <- actor.attribute('name').value  
+			,processes <- Sequence {leaf, delay} 							
 			 ,signals <- signal	
 	    )
 		,leaf : forsyde!LeafProcess 
@@ -269,7 +271,8 @@ rule case5_matching {
 			 ,component <- PN
 	    )
 	    ,PN : forsyde!ProcessNetwork (  
-			 processes <- Sequence {leaf, unzip} 							
+			 name <- actor.attribute('name').value  
+			,processes <- Sequence {leaf, unzip} 							
 			 ,signals <- signal	
 	    )
 		,leaf : forsyde!LeafProcess 
@@ -344,7 +347,8 @@ rule case6_matching {
 			 ,component <- PN
 	    )
 	    ,PN : forsyde!ProcessNetwork (  
-			 processes <- Sequence {leaf, unzip, oportsWithInitials -> collect ( cw | thisModule.resolveTemp(cw, 'delay'))} 							
+			 name <- actor.attribute('name').value  
+			,processes <- Sequence {leaf, unzip, oportsWithInitials -> collect ( cw | thisModule.resolveTemp(cw, 'delay'))} 							
 			 ,signals <- signal	
 	    )
 		,leaf : forsyde!LeafProcess 
@@ -441,7 +445,8 @@ rule case8_matching {
 			 ,component <- PN
 	    )
 	    ,PN : forsyde!ProcessNetwork (  
-			 processes <- Sequence {leaf, delay} 							
+			 name <- actor.attribute('name').value  
+			,processes <- Sequence {leaf, delay} 							
 			 ,signals <- signal	
 	    )
 		,leaf : forsyde!LeafProcess 
@@ -543,7 +548,8 @@ from
 			 ,component <- PN
 	    )
 	    ,PN : forsyde!ProcessNetwork (  
-			 processes <- Sequence {leaf, unzip} 							
+			 name <- actor.attribute('name').value  
+			,processes <- Sequence {leaf, unzip} 							
 			 ,signals <- signal	
 	    )
 		,leaf : forsyde!LeafProcess 
@@ -624,7 +630,8 @@ rule case10_matching {
 			 ,component <- PN
 	    )
 	    ,PN : forsyde!ProcessNetwork (  
-			 processes <- Sequence {leaf, unzip, oportsWithInitials -> collect ( cw | thisModule.resolveTemp(cw, 'delay'))} 							
+			 name <- actor.attribute('name').value  
+			,processes <- Sequence {leaf, unzip, oportsWithInitials -> collect ( cw | thisModule.resolveTemp(cw, 'delay'))} 							
 			 ,signals <- Sequence {signal , oportsWithInitials -> collect(opw | thisModule.resolveTemp(opw, 'signal'))}
 	    )
 		,leaf : forsyde!LeafProcess 
